@@ -49,7 +49,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS=str(os.getenv('SQL_TRACK_MODIFICATIONS'))
 
     
-    CLIENT_ID = "2a2613db-9f1d-4ec6-8605-0ae42b7a6586" # Application (client) ID of app registration
+    CLIENT_ID = "e599afe9-730e-4f77-a9ee-f9019dbf394e" # Application (client) ID of app registration
 
     CLIENT_SECRET = os.getenv("CLIENT_SECRET")
     if not CLIENT_SECRET:
