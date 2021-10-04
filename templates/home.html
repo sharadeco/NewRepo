@@ -1,0 +1,62 @@
+{% extends "header.html" %}
+{% block title %} {{super() }} - Home {% endblock %}
+{% block tab %}
+   
+        {% if user %}
+            
+        <li id="tab" class="nav-item"><a style="color:white" class="nav-link teal">{{ user.get("name") }}</a>
+        </li>
+
+        <li id="tab" class="nav-item"><a style="color:white" class="nav-link" href="/logout">Logout</a></li>
+        
+        {% else  %}
+        <li id="tab" class="nav-item"><a style="color:white" href='{{ auth_url }}' class="nav-link">Sign In</a>
+                {% if config.get("B2C_RESET_PASSWORD_AUTHORITY") %}
+                <a href='{{_build_auth_code_flow(authority=config["B2C_RESET_PASSWORD_AUTHORITY"])["auth_uri"]}}'>Reset Password</a>
+                {% endif %}
+        </li>
+        {% endif %}
+{% endblock %} 
+<head>
+  {% block meta %}
+    {{ super() }}
+  {% endblock %}
+</head>
+
+<html>
+<body>
+{% block content %}
+
+  {% block header %}
+    {{ super() }}   
+       
+  {% endblock %}
+
+  
+  {% block preloader %}
+  {{super()}}
+  {% endblock %}
+
+  {% block alerts %}
+    {{super()}}
+  {% endblock%}
+
+
+  <h3> Summary  </h3>
+  
+  {% block css_elem %}
+    {{ super() }}   
+  {% endblock %}
+
+{% endblock %}
+</body>
+
+{% block scripts %}
+
+  {{ super() }}
+
+{% endblock %}
+    
+
+
+</html>

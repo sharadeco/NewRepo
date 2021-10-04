@@ -1,0 +1,99 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+.toast-close-button {
+  position: absolute;
+  right: 0.3em;
+  top: 0.2em;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFFFFF;
+  -webkit-text-shadow: 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 1;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  filter: alpha(opacity=80);
+  line-height: 1;
+}
+#toast-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-end;
+    box-sizing: content-box;
+    width: 100%;
+    margin-right: 0rem;
+}
+.toast-title{
+    font-size: medium;
+    width:20%;
+}
+.toast-message {
+    width:100%;
+    font-size: small;
+    max-width: 100%;
+}
+#toast-container.toast-top-center > div, #toast-container.toast-bottom-center > div {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 95%;
+}
+</style>
+
+<script>
+
+    toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-center",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "60000",
+    "extendedTimeOut": "60000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+    };
+
+
+    var message_error = '{{ get_flashed_messages( category_filter=["danger"] ) }}';
+    var message_info = '{{ get_flashed_messages( category_filter=["info"] ) }}';
+    var message_success = '{{ get_flashed_messages( category_filter=["success"] ) }}';
+    var span = document.getElementsByClassName("close")[0];
+
+    if (typeof message_error != 'undefined' && message_error != '[]') {
+        msg = message_error.slice(6, message_error.length -6 ).split(",");
+        for (var i=0; i<msg.length;i++)
+        {
+            toastr.error(msg[i], "Error!");
+        }
+    };
+    
+    if (typeof message_info != 'undefined' && message_info != '[]') {
+        msg = message_info.slice(6, message_info.length -6 ).split(",");
+        for (var i=0; i<msg.length;i++)
+        {
+            toastr.info(msg[i], "Info!");
+        }
+    };
+    
+    if (typeof message_success != 'undefined' && message_success != '[]') {
+        msg = message_success.slice(6, message_success.length -6 ).split(",");
+        for (var i=0; i<msg.length;i++)
+        {
+            toastr.success(msg[i], "Success!");
+        }
+    };
+    
+  </script>

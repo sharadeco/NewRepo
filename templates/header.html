@@ -1,0 +1,266 @@
+{% extends "material/base.html" %}
+{% import "material/utils.html" as util %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% block meta %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet"> 
+  <title> {% block title %}Anios Forecasting Tool{% endblock %}</title> 
+  <!-- Added only to remove the favicon ico error-->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" src="{{ url_for('static', filename='images/favicon.ico') }}"> 
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" src="{{ url_for('static', filename='images/favicon.ico') }}">  
+  <!-- change this for the URL in production -->
+{% endblock %}
+</head> 
+
+{% block content %}
+
+{% block script %}
+  
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+{% endblock %}
+
+
+{% block header %}
+<nav class="navbar-header navbar navbar-expand-lg nav-fixed black nav-extended navbar-expand-lg ">
+  <div class="nav-wrapper container-fluid">
+    
+    <div class="nav-item left" style="padding-left:1.5%;padding-top:0.8%;" >
+      <div class="navbar-brand nav-item" >
+        <a class="brand-logo nav-link" aria-current="page" href="/" >
+            <img alt="Brand" style="max-width:110px;" src="{{ url_for('static', filename='images/Ecolab_logo.png') }}">
+        </a>
+      </div>
+    </div>
+    <div class="navbar-nav right  mr-auto mt-2 mb-lg-0" id="menu" style="height:100%; max-width:50%;padding-left:1.5%;">
+      
+        <ul id="tabs">
+          <li id="tab" class="nav-item"><a href="/" id="about" class="nav-link active">About</a></li>
+          <li id="tab" class="nav-item"><a href="/form-1" id="form1" class="nav-link">Form 1</a></li>
+          <li id="tab" class="nav-item"><a href="/form-2" id="form2" class="nav-link">Form 2</a></li>
+          {% block tab %}{% endblock %}
+        </ul>
+      
+    </div>
+    <div class="nav-item center" style="padding-top:1.2%;">
+      <a class="nav-text" aria-current="page">
+          <span class="navbar-text " style="text-align:center;color:#d5d5d5;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;"> 
+            <h6 style="font-size:24px;">Anios Forecasting Tool</h5> </span>
+      </a>
+    </div>
+    
+  </div>
+  
+</nav>
+
+{% endblock %} 
+
+{% block preloader %}
+
+<div class="preloader">
+    
+  <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="lds-ripple" style="background:0 0">
+    <circle cx="50" cy="50" r="4.719" fill="none" stroke="#26a69acf" stroke-width="2">
+      <animate attributeName="r" calcMode="spline" values="0;40" keyTimes="0;1" dur="1" keySplines="0 0.2 0.8 1" begin="-1.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" calcMode="spline" values="1;0" keyTimes="0;1" dur="1" keySplines="0.2 0 0.8 1" begin="-1.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="50" cy="50" r="27.591" fill="none" stroke="#5699d2" stroke-width="2"><animate attributeName="r" calcMode="spline" values="0;40" keyTimes="0;1" dur="1" 
+      keySplines="0 0.2 0.8 1" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" calcMode="spline" values="1;0" keyTimes="0;1" dur="1" keySplines="0.2 0 0.8 1" 
+      begin="0s" repeatCount="indefinite"/></circle></svg>
+  
+</div>
+
+  <script>
+    
+
+    const preloader = document.querySelector('.preloader');
+
+    const fadeEffect = setInterval(() => {
+      if (!preloader.style.opacity) {
+        preloader.style.opacity = 1;
+      }
+      if (preloader.style.opacity > 0) {
+        preloader.style.opacity -= 0.1;
+      } 
+      else if (preloader.style.opacity == 0){
+        preloader.remove();
+      }
+      else {
+        clearInterval(fadeEffect);
+      }
+    }, 70);
+
+    window.addEventListener('load', fadeEffect);
+
+  </script>
+
+{% endblock %}
+
+
+{% block alerts %}
+
+{% include "alerts.html" %}
+
+{% endblock %}
+
+{% block css_elem %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">  
+
+<style>
+ /* width */
+ ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #001010;
+    box-shadow:  0 0 5px grey; 
+    border-radius: 5px;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #26a69a;
+    border-radius: 5px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(0, 37, 37); 
+  }
+
+.preloader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background: rgb(23, 22, 22);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  transition: opacity 0.3s linear;
+}
+
+
+.embed_generated_data{
+  min-height: 10%;
+
+}
+
+.tabs .tab a:hover {
+  color: #1e8ccc;
+}
+  .tabs .tab a {
+    color: black;
+    display: block;
+    font-weight: bolder;
+    width: 100%;
+    height: 100%;
+    -webkit-transition: color .28s ease;
+    -moz-transition: color .28s ease;
+    -o-transition: color .28s ease;
+    -ms-transition: color .28s ease;
+    transition: color .28s ease;
+  }
+
+  .tabs .indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color:  #26a69acf;
+    will-change: left, right;
+}
+
+#tabs #tab a:hover {
+  color: #ffffff;
+}
+#tabs #tab a {
+  color: #1e8ccc;
+  display: inline-block;
+  bottom:1%;
+  align-items: center;
+  width: fit-content;
+  margin-right: auto;
+  height: 100%;
+  -webkit-transition: color .28s ease;
+  -moz-transition: color .28s ease;
+  -o-transition: color .28s ease;
+  -ms-transition: color .28s ease;
+  transition: color .28s ease;
+}
+
+#tabs {
+    position: relative; 
+    bottom: 0px;
+    background-color: transparent;
+    margin: 0 auto;
+    width: 100%;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+#tabs .indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: #26a69acf;
+  will-change: left, right;
+}
+
+
+  ul {
+    display: flex;
+    margin: 0;
+    list-style-type: none;
+  }
+  ul:hover li:not(:hover) a {
+    color: #afafaf;
+    opacity: 0.5;
+  }
+  ul li {
+    position: relative;
+    cursor: pointer;
+  }
+  ul li::after {
+    position: absolute;
+    content: "";
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #26a69acf;
+    transform: scaleX(0);
+    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  ul li:hover::after, ul li.active::after, #tabs #tab a.active::after {
+    transform: scaleX(1);
+  }
+  ul li a > .nav-link::after, ul li a > .nav-link.active::after{
+    color: black;
+    font-weight: bold;
+    background: #26a69acf;
+
+  }
+  ul li a {
+    position: relative;
+    display: flex;
+    color: white;
+    text-decoration: none ;
+    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+</style>
+{% endblock %}
+
+{% endblock %}
+</html>

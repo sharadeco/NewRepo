@@ -1,0 +1,223 @@
+{% extends "header.html" %}
+{% block title %} {{super() }} - Form1 {% endblock %}
+{% block tab %}
+
+        {% if user %}
+
+<li id="tab" class="nav-item">
+    <a style="color:white" class="nav-link teal">{{ user.get("name") }}</a>
+</li>
+
+<li id="tab" class="nav-item"><a style="color:white" class="nav-link" href="/logout">Logout</a></li>
+
+        {% endif %}
+{% endblock %}
+{{ super() }}
+<head>
+    {% block meta %}
+    {{ super() }}
+    {% endblock %}
+</head>
+<html>
+<body>
+    {% block content %}
+
+    {% block header %}
+    {{ super() }}
+
+    {% endblock %}
+
+
+    {% block scripts %}
+
+    {{ super() }}
+    <script>
+
+        $("#file").on("change", function () {
+            $('#upload').attr('disabled', true);
+
+            var value = $(this).val
+            if (value != '') {
+                $('#upload').prop('disabled', false);
+            }
+            else {
+                $('#upload').prop('disabled', true);
+            }
+        });
+
+
+    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script>
+
+        var source = new EventSource("/progress");
+        source.onmessage = function (event) {
+            if (event.data == -20 || event.data == "-20") {
+                $('.progress').hide();
+                $('.status-label').hide();
+            }
+            else if (event.data == -1) {
+                source.close()
+                $('.status-label').text("Success!");
+                $('.progress-bar').removeClass("indeterminate");
+                $('.progress-bar').addClass("determinate").css("width:", "100%");
+                $('.progress').fadeIn(50000);
+                $('.status-label').fadeIn(50000);
+            }
+
+            else if (event.data != -20 || event.data != -1) {
+                $(".progress").show();
+                $('.status-label').show();
+                $('.progress-bar').addClass("indeterminate");
+                $('.status-label').text(event.data)
+            }
+        }
+    </script>
+    {% endblock %}
+
+    {% block preloader %}
+    {{super()}}
+    {% endblock %}
+
+
+    {% block alerts%}
+    {{super()}}
+    {% endblock%}
+
+    <div id="form1-wrapper">
+
+        <div class="row">
+            <div class="col s12 m6">
+                <div class="card teal">
+                    <div class="card-content">
+                        <span class="card-title"><i class="material-icons left" style="padding-top:10px">info</i>Info !</span>
+                        <p style="color:white">Details regarding Form 1 layout</p>
+                    </div>
+                    <div class="card-tabs">
+                        <ul class="tabs tabs-fixed-width">
+                            <li class="tab"><a class="active" href="#uploadinfo">Upload File</a></li>
+                            <li class="tab"><a href="#runmodelinfo">Run Model</a></li>
+                            <li class="tab"><a href="#generateinfo">Generate Summary</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-content grey lighten-4">
+                        <div id="uploadinfo">
+                            Accepted Anios Data File format : <b>"Anios Data"</b> or <b>"Anios Demand Forecast"</b>
+                        </div>
+                        <div id="runmodelinfo">Test 2</div>
+                        <div id="generateinfo">Test 3</div>
+                    </div>
+
+
+                    <div class="progress" style="width: 95%; height: 5px; margin:10px">
+                        <div class="progress-bar" role="progressbar">
+                        </div>
+                    </div>
+                    <span class="status-label" style="margin-left:10px; color:azure; font-family: 'Roboto', sans-serif;"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m6">
+
+                    <div class="card">
+                        <div class="card-content">
+
+                            <div class="card-title" style="color:black;top:10px;line-height: 30px;">
+                                Upload Anios File
+                            </div>
+
+                            <form method=post enctype=multipart/form-data action="/uploadfiles" class="form-group card-tabs" id="uploadsection">
+                                <div class="custom-file">
+
+                                    <div class="file-field">
+                                        <a class="btn-floating mt-0 float-left">
+                                            <i class="material-icons" aria-hidden="true">ios_share</i>
+                                            <input type="file" class="custom-file-input" id="file" name='filedata' accept=".xlsx">
+                                        </a>
+                                        <div class="file-path-wrapper">
+                                            <input class="file-path validate custom-file-label" id="file" name='filedata' type="text" placeholder="Choose Data file" style="font-size: 20px;">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary waves-effect waves-light input-group-append" id="upload" disabled="disabled">UPLOAD</button>
+                                    <label class="custom-file-label" id="file_input_label" for="file" style="font-size: 12px; padding-left:2rem"><i>SELECT A FILE TO UPLOAD</i></label>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+
+
+
+                    <div>
+
+
+                        <div class="btn-group form-group" role="group">
+                            <form method=post enctype=multipart/form-data action="/rundatamodel">
+                                <button type="submit" class="btn waves-effect waves-light btn-secondary btn-large" id="rundatamodel">RUN MODEL</button>
+                            </form>
+                            <form method=post enctype=multipart/form-data id="summarysection" action="/generatesummary">
+                                <button type="submit" class="btn waves-effect waves-light btn-secondary btn-large" id="generatesummary">GENERATE SUMMARY</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            {% if dash_url %}
+            <div class="row">
+                <div class="col s12 m12">
+                    <div class="card-content">
+                        <div class="embed_generated_data">
+                            <iframe class="card"
+                                    src='{{ dash_url }}'
+                                    style="overflow-x: hidden; overflow-y: visible; overflow-x: hidden; position: absolute; width: 98%; height: 100%; background: transparent; border:0px; justify-content: center;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif%}
+
+        </div>
+    </div>
+
+    {% block css_elem %}
+    {{ super() }}
+    <style>
+
+
+        .btn-floating {
+            display: inline-block;
+            color: #FFF;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            width: 60px;
+            top: 30px;
+            height: 60px;
+            line-height: 67px;
+            padding: 0;
+            background-color: #26a69a;
+            border-radius: 50%;
+            transition: .3s;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .btn-large {
+            height: 50px;
+            line-height: 54px;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+    {% endblock %}
+
+    {% endblock %}
+</body>
+
+</html>
