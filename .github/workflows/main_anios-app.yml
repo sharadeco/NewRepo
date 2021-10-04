@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'Anios-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1429A2BACAEF46A8B8E65D04E2ADEE14 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FD938F8DD9A044989ABFAE6D5F052397 }}
