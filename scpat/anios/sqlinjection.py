@@ -248,26 +248,26 @@ def fetch_records(datatype):
 
 
 
-    #try: 
-    #    connection = db.session.connection()
+    try: 
+        connection = db.session.connection()
         print("Connection is Session ", db.session.connection().connection.connection)
-    #except: 
-    #    connection = db.engine.connection()
-     #   print("Connection is Engine", db.engine.connection().connection.connection)
+    except: 
+        connection = db.engine.connection()
+        print("Connection is Engine", db.engine.connection().connection.connection)
     
 
-    try:
-        data = db.session.execute(sql)
-    except:
-        db.session.rollback()
-        data = db.session.execute(sql)    
-    data1 = [row[0] for row in data]
+    #try:
+     #   data = db.session.execute(sql)
+    #except:
+     #   db.session.rollback()
+     #   data = db.session.execute(sql)    
+    #data1 = [row[0] for row in data]
     
     #print(" data is ",data1)
-    from pandas import DataFrame
-    dataframe = DataFrame(data.fetchall())
-    dataframe.columns = data.keys()
-   # dataframe= pd.read_sql_query(sql, con= connection, index_col=['id'])
+    #from pandas import DataFrame
+    #dataframe = DataFrame(data.fetchall())
+    #dataframe.columns = data.keys()
+    dataframe= pd.read_sql_query(sql, con= connection, index_col=['id'])
     
     return dataframe
 
