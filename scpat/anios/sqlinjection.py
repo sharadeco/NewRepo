@@ -319,7 +319,7 @@ def update_records(column, table):
                     +"DATEPART(month, dbo.[Anios_CalForecastData].[Update_timestamp])    <= datepart(month, @datevar_CET) AND "
                     
                     #---------------------------Only overwrite the upcoming data----------------------------------------
-                    +"WHERE ((DATEPART(year, dbo.[Anios_CalForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
+                    +"((DATEPART(year, dbo.[Anios_CalForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
                     +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    >= datepart(month,@datevar_CET))      OR  "
                     +" (DATEPART(year, dbo.[Anios_CalForecastData].[Date])			> datepart(year,@datevar_CET) 	     AND  "
                     +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    <= datepart(month,@datevar_CET))    AND  "
