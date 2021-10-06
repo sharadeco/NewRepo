@@ -16,6 +16,35 @@ from filelock import FileLock
 
 #Json loads is crucial as it makes the object serializable
         
+def checkdbsession():
+
+    import pyodbc
+    import pandas as pd
+    import numpy as np
+    server = 'gsc-scpat-sql-001-d.database.windows.net'
+    database = 'SC-PAT-DB'
+    username = 'SCPAT'
+    password = 'Ecolab@1234'
+    cnxn1 = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+    cursor = cnxn1.cursor()
+    return cursor
+    #if db is None: 
+    #    db.init_app(current_app)
+
+    #if db.engine is None: 
+    #    from sqlalchemy import create_engine
+    #    db.engine = create_engine(current_app.config['SQLALCHEMY_DATABASE_URI'])
+
+    #if db.session is None:
+    #    from sqlalchemy.orm import scoped_session, sessionmaker
+    #    db.session = scoped_session(sessionmaker(bind=db.engine, autoflush= True, autocommit = False))
+
+    #try: 
+    #    check = db.session.connect()
+    #except: 
+    #    check = db.session.connection()
+    #if ( check is None):
+    #    db.session.connection = db.engine.connect()
     
 #inserting the Demand data
 #This process memory is restricted for use
@@ -246,28 +275,34 @@ def fetch_records(datatype):
     else: #fetching the product descriptions from the tables
         pass
 
+    import pyodbc
+    import pandas as pd
+    import numpy as np
+    print(checkdbsession())
+    cursor = checkdbsession()
+    cursor.execute(sql)
+    row = cursor.fetchall()
+    field_name1 = [field[0] for field in cursor.description]
 
+    ######### converting list of list into matrix and then into dataframe
 
-    try: 
-        connection = db.session.connection()
-        print("Connection is Session ", db.session.connection().connection.connection)
-    except: 
-        connection = db.engine.connection()
-        print("Connection is Engine", db.engine.connection().connection.connection)
-    
+    LOL1=np.matrix(row)
+    dataframe=pd.DataFrame(LOL1)
+    dataframe.columns=field_name1    
+    cursor.close()    
 
     #try:
-     #   data = db.session.execute(sql)
+    #    data = db.session.execute(sql)
     #except:
-     #   db.session.rollback()
-     #   data = db.session.execute(sql)    
+    #    db.session.rollback()
+    #    data = db.session.execute(sql)    
     #data1 = [row[0] for row in data]
     
     #print(" data is ",data1)
     #from pandas import DataFrame
     #dataframe = DataFrame(data.fetchall())
     #dataframe.columns = data.keys()
-    dataframe= pd.read_sql_query(sql, con= connection, index_col=['id'])
+    #dataframe= pd.read_sql_query(sql, con= connection, index_col=['id'])
     
     return dataframe
 
