@@ -262,7 +262,7 @@ def fetch_records(datatype):
                     +" [Actual Forecast],            "
                     +" [Forecast KG],                "
                     +" [Model Forecast],             "
-                    +" [Comments],                   "
+                    #+" [Comments],                   "
                     +" [Forecast Accuracy],          "
                     +" [Forecast Bias],              "
                     +" [User],                       "
