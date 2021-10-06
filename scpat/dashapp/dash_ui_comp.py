@@ -1,5 +1,4 @@
 import dash
-
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
@@ -19,14 +18,14 @@ from dash_extensions import Download
 from dash.dependencies import Input, Output, State
 
 from scpat.anios.extensions import db
-
+# data drop down react functions
 def register_callback(app, df):
 
 
     @app.callback(
         Output('table-graph-div', 'children'),
         Output('output-provider','children'),
-        Input('table-paging-with-graph-dropdown-unique', 'value'))
+        Input('table-paging-with-graph-dropdown-unique', 'value'),
     def update_filteredtable(input_uid):
         
         if (input_uid is None) or (input_uid == ''):
@@ -41,11 +40,11 @@ def register_callback(app, df):
             
             df_filtered = df[df['Key'] == str(input_uid)]
         
-        dfff = change_table_layout(df_filtered)
-        dff = change_table_layout(df_filtered)
-
+        dff , dfff = change_table_layout(df_filtered)
+        
+       
         del dfff
-
+        
         table_div = generate_dash_table(dff)
 
         return table_div, message
@@ -82,10 +81,8 @@ def register_callback(app, df):
             input_desc = df['Product Description']
 
         df_filtered = df[(df['Month'].isin(input_month)) & (df['Product Description'].isin(input_desc)) & (df['Product Code'].isin(input_prodcode)) & (df['Mother Division'].isin(input_motherdiv)) & (df['Sales Div'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
-
-        dfff = change_table_layout(df_filtered)
-        dff = change_table_layout(df_filtered) 
-
+        dff , dfff = change_table_layout(df_filtered)
+        
         del dff        
         
         if tab == 'tab-1':
@@ -156,7 +153,7 @@ def register_callback(app, df):
                     x = 0.0
 
                 sql = str("Update dbo.[Anios_CalForecastData] set [Username] = '{}'".format(session['user']['name'])
-               # +", [Comments] = '{}' ".format(row['Comments'])
+                #+", [Comments] = '{}' ".format(row['Comments'])
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
@@ -170,17 +167,18 @@ def register_callback(app, df):
             
                     
 
-        
+#### read data from main
+
 
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Model Forecast' :  df['Model Forecast' ], 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float),
+        'Model Forecast' :  df['Model Forecast' ].round(2), 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float).round(2),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
         }
-
+    #'Comments':df['Comments']
     dff = pd.DataFrame.from_dict(a)
 
     df_filter = dff.groupby(pd.Grouper(key='Date')).sum().sort_values(by='Date')
@@ -197,11 +195,12 @@ def change_table_layout(df):
 
 
 def generate_dash_graph(dfff):
-    
+    print(dfff)
+
     import plotly.express as px
     import plotly.graph_objects as go
-
-    x= dfff["Date"]
+    
+    x=dfff["Date"]
     fig = go.Figure()
     for i in ["Model Forecast","Actual Forecast","Actual Demand"]: 
         color = 'black'
@@ -292,7 +291,7 @@ def generate_dash_graph(dfff):
     return graph_div
 
 def generate_dash_table(dff):
-    
+   
     today = datetime.datetime.today()
     last_month = datetime.datetime(today.year, today.month -1, 1 )
     val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
@@ -353,11 +352,11 @@ def generate_dash_table(dff):
 
     return table_div
 
-
 def generate_dropdowns(df):
         
     month_filter= dcc.Dropdown(
                                 id='table-paging-with-graph-dropdown-month',
+
                                 children=[
                                     dcc.Checklist(
                                     options=[
@@ -536,7 +535,7 @@ def generate_layout(df):
                                             
                                             ])
                                         
-                                        ]),               
+                                        ]),
                                         dbc.Col([
                                             dbc.Col([html.Div(
                                                 [
