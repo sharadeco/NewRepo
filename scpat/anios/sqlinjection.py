@@ -25,7 +25,7 @@ def checkdbsession():
     database = 'SC-PAT-DB'
     username = 'SCPAT'
     password = 'Ecolab@1234'
-    cnxn1 = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+    cnxn1 = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn1.cursor()
     return cursor
     #if db is None: 
