@@ -18,7 +18,7 @@ from dash_extensions import Download
 from dash.dependencies import Input, Output, State
 
 from scpat.anios.extensions import db
-# data drop down react functions
+
 def register_callback(app, df):
 
 
@@ -27,27 +27,27 @@ def register_callback(app, df):
         Output('output-provider','children'),
         Input('table-paging-with-graph-dropdown-unique', 'value'))
     def update_filteredtable(input_uid):
-         if (input_uid is None) or (input_uid == ''):
+        
+        if (input_uid is None) or (input_uid == ''):
             message = " No SKU is selected "
             df_filtered = df
 
-         else:
+        else:
             dummy = input_uid.partition("*")[2] 
             message = str("Selected SKU : \n Product Code " + input_uid.partition("*")[0] + ", Material Type " + dummy.partition("*")[0] )
             dummy = dummy.partition("*")[2]
             message = str(message + ", Mother Division " + dummy.partition("*")[0] + ", Sales Division " + dummy.partition("*")[2] )
-
+            
             df_filtered = df[df['Key'] == str(input_uid)]
-
-         dff , dfff = change_table_layout(df_filtered)
-         #print("Filtered data ",df_filtered.head())
-         #print("Unique ID is ",input_uid)
-       
-         del dfff
         
-         table_div = generate_dash_table(dff)
+        dfff = change_table_layout(df_filtered)
+        dff = change_table_layout(df_filtered)
 
-         return table_div, message
+        del dfff
+
+        table_div = generate_dash_table(dff)
+
+        return table_div, message
 
     @app.callback(
         (Output('table-graph-tab', 'children')),   
@@ -55,10 +55,9 @@ def register_callback(app, df):
         Input('table-paging-with-graph-dropdown-product-code', 'value'),
         Input('table-paging-with-graph-dropdown-mother-div', 'value'),
         Input('table-paging-with-graph-dropdown-sales-div', 'value'),
-        Input('table-paging-with-graph-dropdown-desc', 'value'), 
+        Input('table-paging-with-graph-dropdown-desc', 'value'),
         Input('table-paging-with-graph-dropdown-material-type', 'value'),
         Input('tabs-example', 'value')])
-        
     def update_filtereddashboard(input_month, input_prodcode, input_motherdiv, input_salesdiv, input_desc, input_materialtype, tab):
         
         input_desc = list(filter(None, input_desc))
@@ -82,8 +81,10 @@ def register_callback(app, df):
             input_desc = df['Product Description']
 
         df_filtered = df[(df['Month'].isin(input_month)) & (df['Product Description'].isin(input_desc)) & (df['Product Code'].isin(input_prodcode)) & (df['Mother Division'].isin(input_motherdiv)) & (df['Sales Div'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
-        dff , dfff = change_table_layout(df_filtered)
-        
+
+        dfff = change_table_layout(df_filtered)
+        dff = change_table_layout(df_filtered) 
+
         del dff        
         
         if tab == 'tab-1':
@@ -121,7 +122,7 @@ def register_callback(app, df):
         return dict(content=download_buffer.getvalue(), filename=file)
 
     
-    @app.callback(Output('output-provider-2','children'), 
+    @app.callback(Output('output-provider-2','children'),
         Input('save-button-to-database', 'submit_n_clicks'),
         State('table-paging-with-graph','data'),
         State('table-paging-with-graph-dropdown-unique','value'))
@@ -154,7 +155,7 @@ def register_callback(app, df):
                     x = 0.0
 
                 sql = str("Update dbo.[Anios_CalForecastData] set [Username] = '{}'".format(session['user']['name'])
-                #+", [Comments] = '{}' ".format(row['Comments'])
+                +", [Comments] = '{}' ".format(row['Comments'])
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
@@ -168,24 +169,23 @@ def register_callback(app, df):
             
                     
 
-#### read data from main
-
+        
 
 def change_table_layout(df):
     
-    a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str),  'Sales Div': df['Sales Div'].astype(str),
+    a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
         'Model Forecast' :  df['Model Forecast' ].round(2), 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float).round(2),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
-        }
-    #'Comments':df['Comments']
+        'Comments':df['Comments']}
+
     dff = pd.DataFrame.from_dict(a)
 
     df_filter = dff.groupby(pd.Grouper(key='Date')).sum().sort_values(by='Date')
     df_filter.reset_index(inplace=True)
     
-    #df_filter['Comments'].replace(0.0,'', inplace=True)
+    df_filter['Comments'].replace(0.0,'', inplace=True)
     
     dff = df_filter.set_index('Date').transpose()
     dff.index.name = 'Date'
@@ -196,12 +196,11 @@ def change_table_layout(df):
 
 
 def generate_dash_graph(dfff):
-    print(dfff)
-
+    
     import plotly.express as px
     import plotly.graph_objects as go
-    
-    x=dfff["Date"]
+
+    x= dfff["Date"]
     fig = go.Figure()
     for i in ["Model Forecast","Actual Forecast","Actual Demand"]: 
         color = 'black'
@@ -292,7 +291,7 @@ def generate_dash_graph(dfff):
     return graph_div
 
 def generate_dash_table(dff):
-   
+    
     today = datetime.datetime.today()
     last_month = datetime.datetime(today.year, today.month -1, 1 )
     val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
@@ -353,11 +352,11 @@ def generate_dash_table(dff):
 
     return table_div
 
+
 def generate_dropdowns(df):
         
     month_filter= dcc.Dropdown(
                                 id='table-paging-with-graph-dropdown-month',
-
                                 children=[
                                     dcc.Checklist(
                                     options=[
@@ -551,8 +550,7 @@ def generate_layout(df):
                                                         placeholder='Filter by Key...',
                                                         style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                             'font-family':"'Roboto', sans-serif",'margin': '5px'}
-                                                        )
-                                                         
+                                                        )                                                     
                                                 ]
                                             ),]),
                                             dbc.Col([html.Div(id='output-provider', style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", 
@@ -565,8 +563,8 @@ def generate_layout(df):
                                                                 'font-family':"'Roboto', sans-serif",'margin': '5px'})
                                             ])
 
-                                        ]),     
-                                                                              
+                                        ]),
+                                        
                                         ], style={"border":"0px", "background-color":"transparent", "text-align":"center", "justify":"center"}),
                             dbc.CardBody(
                                         children=[
