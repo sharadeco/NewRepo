@@ -25,7 +25,7 @@ def register_callback(app, df):
     @app.callback(
         Output('table-graph-div', 'children'),
         Output('output-provider','children'),
-        Input('table-paging-with-graph-dropdown-unique', 'value'),
+        Input('table-paging-with-graph-dropdown-unique', 'value'))
     def update_filteredtable(input_uid):
         
         if (input_uid is None) or (input_uid == ''):
