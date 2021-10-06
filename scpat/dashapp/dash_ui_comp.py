@@ -155,7 +155,7 @@ def register_callback(app, df):
                     x = 0.0
 
                 sql = str("Update dbo.[Anios_CalForecastData] set [Username] = '{}'".format(session['user']['name'])
-                +", [Comments] = '{}' ".format(row['Comments'])
+               # +", [Comments] = '{}' ".format(row['Comments'])
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
@@ -174,18 +174,18 @@ def register_callback(app, df):
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Model Forecast' :  df['Model Forecast' ].round(2), 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float).round(2),
+        'Model Forecast' :  df['Model Forecast' ], 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
-        'Comments':df['Comments']}
+        }
 
     dff = pd.DataFrame.from_dict(a)
 
     df_filter = dff.groupby(pd.Grouper(key='Date')).sum().sort_values(by='Date')
     df_filter.reset_index(inplace=True)
     
-    df_filter['Comments'].replace(0.0,'', inplace=True)
+    #df_filter['Comments'].replace(0.0,'', inplace=True)
     
     dff = df_filter.set_index('Date').transpose()
     dff.index.name = 'Date'
