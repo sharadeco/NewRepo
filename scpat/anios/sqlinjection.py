@@ -25,7 +25,7 @@ def checkdbsession():
     database = 'SC-PAT-DB'
     username = 'SCPAT'
     password = 'Ecolab@1234'
-    cnxn1 = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+    cnxn1 = pyodbc.connect('DRIVER={ODBC Driver 13 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn1.cursor()
     return cursor
     #if db is None: 
@@ -275,33 +275,33 @@ def fetch_records(datatype):
     else: #fetching the product descriptions from the tables
         pass
 
-    #import pyodbc
-    #import pandas as pd
-    #import numpy as np
-    #print(checkdbsession())
-    #cursor = checkdbsession()
-    #cursor.execute(sql)
-    #row = cursor.fetchall()
-    #field_name1 = [field[0] for field in cursor.description]
+    import pyodbc
+    import pandas as pd
+    import numpy as np
+    print(checkdbsession())
+    cursor = checkdbsession()
+    cursor.execute(sql)
+    row = cursor.fetchall()
+    field_name1 = [field[0] for field in cursor.description]
 
     ######### converting list of list into matrix and then into dataframe
 
-    #LOL1=np.matrix(row)
-    #dataframe=pd.DataFrame(LOL1)
-    #dataframe.columns=field_name1    
-    #cursor.close()    
+    LOL1=np.matrix(row)
+    dataframe=pd.DataFrame(LOL1)
+    dataframe.columns=field_name1    
+    cursor.close()    
 
-    try:
-        data = db.session.execute(sql)
-    except:
-        db.session.rollback()
-        data = db.session.execute(sql)    
-    data1 = [row[0] for row in data]
+    #try:
+    #    data = db.session.execute(sql)
+    #except:
+    #    db.session.rollback()
+    #    data = db.session.execute(sql)    
+    #data1 = [row[0] for row in data]
     
     #print(" data is ",data1)
-    from pandas import DataFrame
-    dataframe = DataFrame(data.fetchall())
-    dataframe.columns = data.keys()
+    #from pandas import DataFrame
+    #dataframe = DataFrame(data.fetchall())
+    #dataframe.columns = data.keys()
     #dataframe= pd.read_sql_query(sql, con= connection, index_col=['id'])
     
     return dataframe
