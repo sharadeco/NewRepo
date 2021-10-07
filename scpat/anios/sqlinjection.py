@@ -357,7 +357,7 @@ def update_records(column, table):
                     +"((DATEPART(year, dbo.[Anios_CalForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
                     +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    >= datepart(month,@datevar_CET))      OR  "
                     +" (DATEPART(year, dbo.[Anios_CalForecastData].[Date])			> datepart(year,@datevar_CET) 	     AND  "
-                    +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    <= datepart(month,@datevar_CET))    AND  "
+                    +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    <= datepart(month,@datevar_CET)) )   AND  "
                      +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F'        ")             
             
         
