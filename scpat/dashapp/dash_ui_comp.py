@@ -173,7 +173,7 @@ def register_callback(app, df):
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Model Forecast' :  df['Model Forecast' ], 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float),
+        'Model Forecast' :  df['Model Forecast' ].astype(float), 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
