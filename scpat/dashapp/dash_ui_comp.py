@@ -103,7 +103,7 @@ def register_callback(app, df):
         
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
                 'Product Description': df['Product Description'], 'Mother Division': df['Mother Division'], 
-                'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
+                'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Statistical Forecast'    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
                 'Forecast KG'    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
@@ -173,7 +173,7 @@ def register_callback(app, df):
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Model Forecast' :  df['Model Forecast' ].astype(float), 'Final Forecast'    :  df[ 'Final Forecast' ].astype(float),
+        'Statistical Forecast' :  df['Model Forecast' ].astype(float), 'Consesnsus Forecast':  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
@@ -202,10 +202,10 @@ def generate_dash_graph(dfff):
     
     x=dfff["Date"]
     fig = go.Figure()
-    for i in ["Model Forecast","Actual Forecast","Actual Demand"]: 
+    for i in ["Statistical Forecast","Actual Forecast","Actual Demand"]: 
         color = 'black'
         symbols = 1
-        if i == "Model Forecast":
+        if i == "Statistical Forecast":
             color = 'teal'
         elif i == "Actual Forecast":
             color = 'red'
