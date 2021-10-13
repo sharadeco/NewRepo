@@ -109,7 +109,7 @@ def register_callback(app, df):
         State("table-paging-with-graph", "data"))
     def download_as_csv(n_clicks, table_data):
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
-                'Product Description': df['Product Description'], 'Mother Division': df['Mother Division'], 'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Forecast KG    '    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
+                'Product Description': df['Product Description'], 'Mother Division': df['Mother Division'], 'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Statistical Forecast ' : df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Forecast KG    '    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
 
@@ -295,7 +295,7 @@ def ui_layout(app, df):
                                 {'name':'Product Description',	'id':'Product Description',	'type':	'text'},
                                 {'name':'Year',	'id':'Year',	'type':	'numeric'                             },
                                 {'name':'Date',	'id':'Date',	'type':	'datetime'                            },
-                                {'name':'Model Forecast',	'id':'Model Forecast',	'type':	'numeric', 'format':Format(decimal_delimiter='.').scheme('f').precision(2)            },
+                                {'name':'Statistical Forecast',	'id':'Model Forecast',	'type':	'numeric', 'format':Format(decimal_delimiter='.').scheme('f').precision(2)            },
                                 {'name':'Actual Forecast',	'id':'Actual Forecast',	'type':	'numeric', 'format':Format(decimal_delimiter='.').scheme('f').precision(2)            },
                                 {'name':'Actual Demand',	'id':'Actual Demand',	'type':	'numeric', 'format':Format(decimal_delimiter='.').scheme('f').precision(2)            },
                             ],
