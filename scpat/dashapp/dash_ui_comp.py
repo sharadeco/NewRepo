@@ -159,7 +159,7 @@ def register_callback(app, df):
                     x = 0.0
                     count=0
                 sql = str("Update dbo.[Anios_CalForecastData] set [Username] = '{}'".format(session['user']['name'])
-                +", [Comments] = '{}' ".format(dt_string)   
+                #+", [Comments] = '{}' ".format(dt_string)   
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
