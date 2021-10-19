@@ -6,9 +6,12 @@ import dash_table
 
 import pandas as pd 
 from flask import current_app, session
+import pyodbc
+import numpy as np
+
 
 import datetime
-
+from datetime import datetime
 from dash.dependencies import Input, Output, State
 import pandas as pd 
 
@@ -19,6 +22,7 @@ from dash.dependencies import Input, Output, State
 
 from scpat.anios.extensions import db
 # data drop down react functions
+
 def register_callback(app, df):
 
 
@@ -130,6 +134,8 @@ def register_callback(app, df):
             raise PreventUpdate
         
         else: 
+            now = datetime.datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
             blankcsv = pd.DataFrame(table_data)
             blankcsv = blankcsv.set_index('Date').transpose()
             blankcsv.index.name = 'Date'
@@ -148,12 +154,12 @@ def register_callback(app, df):
             query = []
             for index, row in blankcsv.iterrows():
                 try: 
-                    x = format(float(row['Final Forecast']), '.2f')
+                    x = format(float(row['Consensus Forecast']), '.2f')
                 except: 
                     x = 0.0
-
+                    count=0
                 sql = str("Update dbo.[Anios_CalForecastData] set [Username] = '{}'".format(session['user']['name'])
-                #+", [Comments] = '{}' ".format(row['Comments'])
+                +", [Comments] = '{}' ".format(dt_string)   
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
@@ -173,7 +179,7 @@ def register_callback(app, df):
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Statistical Forecast' :  df['Model Forecast' ].astype(float), 'Consesnsus Forecast':  df[ 'Final Forecast' ].astype(float),
+        'Statistical Forecast' :  df['Model Forecast' ].astype(float), 'Consensus Forecast':  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
@@ -202,28 +208,6 @@ def generate_dash_graph(dfff):
     
     x=dfff["Date"]
     fig = go.Figure()
-    for i in ["Statistical Forecast","Actual Forecast","Actual Demand"]: 
-        color = 'black'
-        symbols = 1
-        if i == "Statistical Forecast":
-            color = 'teal'
-        elif i == "Actual Forecast":
-            color = 'red'
-            symbols = 5
-        elif i == "Actual Demand":
-            color = '#2F4F4F'
-            symbols = 15
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=dfff[i],
-                name=i,
-                mode='lines+markers', 
-                marker_symbol=symbols,
-                marker={'size':9},
-                line = dict(color=color, width=3)
-            ))
-
     for i in ["Demand KG","Forecast KG"]:
         color = 'black'
         if i == "Demand KG":
@@ -246,8 +230,8 @@ def generate_dash_graph(dfff):
                 marker_line_color=color,
                 marker_line_width=2, 
                 opacity=0.7
-            ))
-    
+            ))    
+
     del dfff
 
     fig.update_layout(
