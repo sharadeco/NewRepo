@@ -29,7 +29,7 @@ def checkDFTab(data, tabname):
         
         data1['Division'] = data1['Division'].str.upper()
         data1['Division'] = data1['Division'].str.strip()
-        
+       
         data1['Famille de produit'] = data1['Famille de produit'].str.strip()
 
         df = []
@@ -80,8 +80,7 @@ def checkDivisionTab(div, tabname):
         
         message= "'" + tabname + "' sheet is missing some columns! \nRequired columns: ['Division', 'Sales Org / Country', 'Code Produit'] \nProvided columns: "+ str(list(div.columns))
         print("[ERROR ]:" + message)
-        flash(message, "danger")
-    
+        flash(message, "danger")    
         return False
 
 def checkAniosData(name):
@@ -129,7 +128,7 @@ def checkAniosData(name):
         fdem = ray.get(checkDFTab.remote(demand, 'DEMAND')) == True
         del demand
 
-        ffcs = ray.get(checkDFTab.remote(forecast, 'FORECAST')) == True
+        ffcs = ray.get(checkDFTab.remote(forecast, "FORECAST")) == True
         del forecast
         
         fdiv = ray.get(checkDivisionTab.remote(div, 'DIVISION')) == True
@@ -150,9 +149,9 @@ def checkAniosDemandForecast(name):
         return False
 
     #if the file doesn't contain the division mapping in the sheet
-    elif 'Division Mapping' not in wb.sheetnames and 'matching export Jia Jie' not in wb.sheetnames:
-        message = "'Division Mapping' or 'Matching export Jia Jie' sheet is missing in " + name +" file! \nFile contains the sheets : " + wb.sheetnames
-        print("[ERROR ]:" + message)
+    elif 'Divisions correspondance' not in wb.sheetnames and 'matching export Jia Jie' not in wb.sheetnames:
+        message = "'Divisions correspondance' or 'Matching export Jia Jie' sheet is missing in " + name +" file! \nFile contains the sheets : " + wb.sheetnames
+        print("[ERROR ]:" + message)    
         flash(message, "danger")
         return False
 
@@ -174,10 +173,10 @@ def checkAniosDemandForecast(name):
         else:
             demand= data[data['Data type'].isin(['demand','Demand','DEMAND'])] 
 
-            forecast= data[data['Data type'].isin(['FORECAST','Forecast','forecast'])] 
+            forecast= data[data['Data type'].isin(['FORECAST','Forecast','Consensus Fcst','forecast'])] 
 
             try:
-                div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Division Mapping')
+                div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Divisions correspondance')
 
             except:            
                 div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='matching export Jia Jie')
@@ -203,7 +202,7 @@ def allowed_file(name):
     flag = False
     
     # for file - checking if 'Anios data.csv' or 'Anios Demand Forecast.xlsx' is provided.
-    if ("anios_data" not in filename) and ("anios_demand_forecast" not in filename) :
+    if ("anios_data" not in filename) and ("anios_new_model" not in filename) :
         message = "File must be either 'Anios data' or 'Anios Demand Forecast' but recieved "+ name +" !"
         print("[ERROR ]:" + message)
         flash(message, "danger")
@@ -212,7 +211,7 @@ def allowed_file(name):
     elif ("anios_data" in filename):
         flag = checkAniosData(name)
 
-    elif ("anios_demand_forecast" in filename):
+    elif ("anios_new_model" in filename):
         flag = checkAniosDemandForecast(name)
 
     return flag
@@ -285,7 +284,6 @@ def computeForecast(dem_data, div_data):
     
     data1 = pd.merge(dem_data,div_data,on ='Division',how ='inner')
     fcst_tabledata = data1[['Code Produit_x','Désignation','Code Produit_y','Qté Fact', 'Division','Kg sold', 'Famille de produit','Date']].copy()
-    
     del data1
     del dem_data
     del div_data
@@ -303,7 +301,8 @@ def computeForecast(dem_data, div_data):
     fcst_tabledata = fcst_tabledata.loc[mask]
     df= fcst_tabledata[fcst_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
     df.dropna(inplace=True)
-    
+    print("In the compute Fcst function *******************************     now")
+
     del enddate
     del startdate
     del fcst_tabledata
@@ -315,6 +314,7 @@ def computeForecast(dem_data, div_data):
     
     r = open(json_file,'w')
     with open(json_file,'a+') as r:
+        
         
         for i in range(0, len(df), 1000):
             slc = df.iloc[i : i + 1000]
