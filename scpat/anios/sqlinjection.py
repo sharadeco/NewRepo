@@ -318,15 +318,15 @@ def update_records(column, table):
         #this is to prevent duplicate entries, majorly for Demand and Forecast Data
         if table == "Demand":
             sql = str( sql_timezone                    
-                    +"Update dbo.[Anios_DemandData] set dbo.[Anios_DemandData].Delete_Ind = 'T', 						 "
+                    +"Update dbo.[Anios_DemandData] set  Delete_Ind ="
+                    +"case when dbo.[Anios_DemandData].[Date]		    < DATEADD(MONTH, -13,  @datevar_CET)  then   'T' "
+                    +"else   'F'    end, 						 "
                     +"dbo.[Anios_DemandData].[Update_timestamp] = @datevar_CET                                           "
-                    +"WHERE DATEPART(year, dbo.[Anios_DemandData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND  "
+                    +"WHERE dbo.[Anios_DemandData].[Date]		    < DATEADD(MONTH, -13,  @datevar_CET) AND
+                    +"DATEPART(year, dbo.[Anios_DemandData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND       "
                     +"DATEPART(month, dbo.[Anios_DemandData].[Update_timestamp])	<= datepart(month, @datevar_CET) AND  "
                      #---------------------------Only overwrite the last month and upcoming data------------------------- 
-                    +"dbo.[Anios_DemandData].[Date]		    >= DATEADD(MONTH, -13,  @datevar_CET) AND  "
-                    # +"DATEPART(month, dbo.[Anios_DemandData].[Date])		    >= datepart(month,@datevar_CET)- 1) AND  "
-                    +"dbo.[Anios_DemandData].[Delete_Ind] = 'F'	 ")
-            
+                    +"dbo.[Anios_DemandData].[Delete_Ind] = 'F' ")            
             sqlD = str( sql_timezone                    
                     +"Delete from dbo.[Anios_DemandData] where [Date]  >= DATEADD(MONTH, -13,  @datevar_CET)")
             db.session.execute(sqlD)
