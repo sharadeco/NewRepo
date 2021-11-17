@@ -103,7 +103,7 @@ def convert_fcst_to_json(df, flag, pobj):
                 else:
                     data=Anios_CalForecastData(unique_id(), row['Key'], row['Code Produit'], "DUMMY", row['Division Mapping#Code Produit'], row['Famille de produit'],
                                      row['Date'].strftime('%Y-%m-%d'), row['Qté Fact'], row['Qté Fact'], row['Qté Fact'], "", with_timezone_cet, "F", '', 0, 0, row['Sales Div'])
-                    print("Updated rows to database ")
+                    
                 
                 json.dump(json.loads(data.to_json()), json_obj, ensure_ascii=False)
                 json_obj.write("\n")
