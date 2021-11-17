@@ -329,7 +329,7 @@ def update_records(column, table):
             sqlD = str( sql_timezone                    
                     +"Delete from dbo.[Anios_DemandData] where [Date]  >= DATEADD(MONTH, -13,  @datevar_CET)")
             db.session.execute(sqlD)
-            
+            db.session.commit()
         if table == "Forecast":
             sql = str( sql_timezone
                     +"Update dbo.[Anios_ForecastData] set dbo.[Anios_ForecastData].Delete_Ind = 'T', "
