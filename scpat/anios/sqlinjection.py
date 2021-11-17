@@ -323,13 +323,13 @@ def update_records(column, table):
                     +"else   'F'    end, 						 "
                     +"dbo.[Anios_DemandData].[Update_timestamp] = @datevar_CET                                           "
                     +"WHERE DATEPART(year, dbo.[Anios_DemandData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND  "
-                    +"DATEPART(month, dbo.[Anios_DemandData].[Update_timestamp])	<= datepart(month, @datevar_CET) AND  "
-                     #---------------------------Only overwrite the last month and upcoming data------------------------- 
-                    +"dbo.[Anios_DemandData].[Delete_Ind] = 'F' ")
+                    +"DATEPART(month, dbo.[Anios_DemandData].[Update_timestamp])	<= datepart(month, @datevar_CET)  ")
+        
             sqlD = str( sql_timezone                    
                     +"Delete from dbo.[Anios_DemandData] where [Date]  >= DATEADD(MONTH, -13,  @datevar_CET)")
             db.session.execute(sqlD)
             db.session.commit()
+                
         if table == "Forecast":
             sql = str( sql_timezone
                     +"Update dbo.[Anios_ForecastData] set dbo.[Anios_ForecastData].Delete_Ind = 'T', "
