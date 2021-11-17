@@ -345,7 +345,7 @@ def update_records(column, table):
                     +"dbo.[Anios_ForecastData].[Delete_Ind] = 'F'     ") 
 
         if table == "Calculated": 
-            sql1 = str(sql_timezone
+            sql = str(sql_timezone
                     +"Update dbo.[Anios_CalForecastData] set dbo.[Anios_CalForecastData].Delete_Indicator = 'T', "
                     +"dbo.[Anios_CalForecastData].[Update_timestamp] = @datevar_CET "
                     +"WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND "
@@ -360,24 +360,6 @@ def update_records(column, table):
                     +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F' and  dbo.[Anios_CalForecastData].[Username] not like '%,%' ")             
 
 
-            sql2 = str(sql_timezone
-                    +"UPDATE dbo.[Anios_CalForecastData] "
-                    +"SET [StatForecast] = t1.[StatForecast] "
-                    +"FROM (select * FROM dbo.Anios_CalForecastData WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND Delete_Indicator='F'  and  "
-                    +"Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ) t1 "
-                    +"WHERE [Anios_CalForecastData].[Key] = t1.[Key] "
-                    +"AND [Anios_CalForecastData].[Date] = t1.[Date]  and [Anios_CalForecastData].Username  like '%,%' and  [Anios_CalForecastData].Delete_Indicator='F' and [Anios_CalForecastData].[Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) ")             
-
-            sql = str(sql_timezone
-                    +"DELETE    FROM dbo.Anios_CalForecastData "
-                    +"WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND "
-                    +"Delete_Indicator='F'  and Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
-           
-            db.session.execute(sql1)
-            db.session.execute(sql2)
-        
-         
-        
         data = db.session.execute(sql)
          
     #The following values are applicable only for the Calculated forecast table
@@ -391,8 +373,26 @@ def update_records(column, table):
                 +"INNER JOIN "
                 +"dbo.Anios_DemandData  B "
                 +"ON A.[Code Produit] = B.[Code Produit] " )
+  
+        sql1 = str(sql_timezone
+                    +"UPDATE dbo.[Anios_CalForecastData] "
+                    +"SET [StatForecast] = t1.[StatForecast] "
+                    +"FROM (select * FROM dbo.Anios_CalForecastData WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND Delete_Indicator='F'  and  "
+                    +"Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ) t1 "
+                    +"WHERE [Anios_CalForecastData].[Key] = t1.[Key] "
+                    +"AND [Anios_CalForecastData].[Date] = t1.[Date]  and [Anios_CalForecastData].Username  like '%,%' and  [Anios_CalForecastData].Delete_Indicator='F' and [Anios_CalForecastData].[Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) ")             
 
-        data = db.session.execute(sql)
+        sql2 = str(sql_timezone
+                +"DELETE    FROM dbo.Anios_CalForecastData "
+                +"WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND "
+                +"Delete_Indicator='F'  and Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
+        
+        data = db.session.execute(sql) 
+        db.session.commit()
+        db.session.execute(sql1)
+        db.session.commit()
+        db.session.execute(sql2)
+        
     
     print("[LOG ]: Executing  "+ sql)
     
