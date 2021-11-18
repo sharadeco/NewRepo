@@ -319,8 +319,8 @@ def update_records(column, table):
         if table == "Demand":
             sql = str( sql_timezone                    
                    +"Update dbo.[Anios_DemandData] set  Delete_Ind ='T'"
-                    +"WHERE  dbo.[Anios_CalForecastData].[Date] < DATEADD(MONTH, -13,  @datevar_CET) AND "
-                    +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F'			  ")
+                    +"WHERE  dbo.[Anios_DemandData].[Date] < DATEADD(MONTH, -13,  @datevar_CET) AND "
+                    +"dbo.[Anios_DemandData].[Delete_Indicator] = 'F'			  ")
             
             sqlD = str( sql_timezone                    
                     +"Delete from dbo.[Anios_DemandData] where [Date]  >= DATEADD(MONTH, -13,  @datevar_CET)")
