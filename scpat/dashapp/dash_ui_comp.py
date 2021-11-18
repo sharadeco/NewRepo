@@ -35,6 +35,20 @@ def register_callback(app, df):
         if (input_uid is None) or (input_uid == ''):
             message = " No SKU is selected "
             df_filtered = df
+            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Final Forecast','Unique Id']]
+            Data_grouped=consensus1.groupby('Date').sum()
+            Data_grouped['Forecast Bias'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error con']/Data_grouped['Demand KG'])
+            Data_grouped['FA_1']=Data_grouped['ABS con']/Data_grouped['Demand KG']
+            Data_grouped['Forecast Accuracy']=np.where(Data_grouped['FA_1']>1,0,1-(Data_grouped['FA_1']))
+            df_filtered=Data_grouped
+            df_filtered.reset_index(inplace=True)
+            df_filtered.columns
+            df_filtered.replace([np.inf, -np.inf], np.nan,inplace=True)
+            df_filtered.replace(np.nan,0,inplace=True)
+            df_filtered['Forecast Accuracy']=df_filtered['Forecast Accuracy'].round(2)*100
+            df_filtered['Forecast Bias']=df_filtered['Forecast Bias']*100
+            df_filtered['Forecast Accuracy']=df_filtered['Forecast Accuracy'].round(2)
+            df_filtered['Forecast Bias']=df_filtered['Forecast Bias'].round(2)
 
         else:
             dummy = input_uid.partition("*")[2] 
@@ -101,7 +115,7 @@ def register_callback(app, df):
 
     @app.callback(
         Output("download", "data"),
-        Input("save-button-to-full-csv", "n_clicks"),
+        Input("save-button-to-full-csv", "cks"),
         State("table-paging-with-graph", "data"))
     def download_as_csv(n_clicks, table_data):
         
@@ -163,8 +177,56 @@ def register_callback(app, df):
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
-            
+
                 db.session.execute(sql)
+
+            db.session.commit()
+
+            if len(blankcsv) > 0 and not (key is None or key == ''):
+                return " Updated into the database "
+
+
+    @app.callback(Output('output-provider-3','children'),
+        Input('save-consensus-to-database', 'submit_n_clicks'),
+        State('table-paging-with-graph','data'),
+        State('table-paging-with-graph-dropdown-unique','value'))
+    def update_tocon_db(submit_n_clicks, table_data, key):
+
+        if not submit_n_clicks:
+            raise PreventUpdate
+        
+        else: 
+            now = datetime.datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            blankcsv = pd.DataFrame(table_data)
+            blankcsv = blankcsv.set_index('Date').transpose()
+            blankcsv.index.name = 'Date'
+            blankcsv.reset_index(level=0, inplace= True)
+            
+            blankcsv.to_csv("table data.csv", header=True)
+
+                       
+            today = datetime.datetime.today()
+            last_month = datetime.datetime(today.year, today.month -1, 1 )
+            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
+            blankcsv.reset_index(level=0, inplace=True)
+            
+            blankcsv = blankcsv[blankcsv['Date'].isin(val.strftime("%Y-%m-01").astype(str))]
+            
+            query = []
+            for index, row in blankcsv.iterrows():
+                try: 
+                    x = format(float(row['Consensus Forecast']), '.2f')
+                except: 
+                    x = 0.0
+                    count=0
+                sql1 = str("Update dbo.[Anios_CalForecastData] set [Username] = '' "
+                #+", [Comments] = '{}' ".format(dt_string)   
+                +", [Forecast] = [StatForecast] "
+                +"where [Key] = '{}' ".format( key )
+                +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
+
+                db.session.execute(sql1)
 
             db.session.commit()
 
@@ -514,6 +576,21 @@ def generate_layout(df):
                                                             message='Do you want to update changes to database ?'
                                                         )
                                                     ]),
+                                                    ]),
+                                                dbc.Row([
+                                                    html.Div( [  
+                                                        dcc.ConfirmDialogProvider(
+                                                            children=
+                                                            html.Button(
+                                                                ['UPDATE CONS WITH STAT'], 
+                                                                style={"width":"100%", 'fontSize':10, "backgroundColor":"transparent", "border-radius":"0px",
+                                                                'font-family':"'Roboto', sans-serif","color":"#555", "border":"1px solid #bbb", "margin-left":"0px" 
+                                                                }
+                                                            ),
+                                                            id="save-consensus-to-database",
+                                                            message='Do you want to update changes to database ?'
+                                                        )
+                                                    ]),
                                                     ])
                                             
                                             
@@ -545,8 +622,12 @@ def generate_layout(df):
                                                                 "border-left":"0px", "border-right":"0px", "width":"100%", 
                                                                 "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                                 'font-family':"'Roboto', sans-serif",'margin': '5px'})
+                                            ]),
+                                            dbc.Col([html.Div(id='output-provider-3', style={'fontSize':15, 
+                                                                "border-left":"0px", "border-right":"0px", "width":"100%", 
+                                                                "border-top":"0px", "border-radius":"0px", "border-color":"teal",
+                                                                'font-family':"'Roboto', sans-serif",'margin': '5px'})
                                             ])
-
                                         ]),
                                         
                                         ], style={"border":"0px", "background-color":"transparent", "text-align":"center", "justify":"center"}),
