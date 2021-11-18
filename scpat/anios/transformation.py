@@ -231,20 +231,21 @@ def computeDemand(dem_data, div_data):
 
     #filtering the logic of the dataframe to accomodate only previous month data in demand
     demand_tabledata['Date'] = pd.to_datetime(demand_tabledata['Date'], format='%Y-%m-%d')        
+    now = datetime.now()
+    last=   now+dateutil.relativedelta.relativedelta(months=-12)
     today = date.today()
     if(today.month == 1):
-        startdate = datetime(today.year - 1, 12 , 1 )
-        enddate = datetime(today.year - 1, 12 , 31)
-
-
+        startdate = datetime(last.year, last.month   , 1)
+        enddate = datetime(today.year, today.month-1  , 1)
+    
+    
     else:
         last_day_of_previous_month = today.replace(day=1) - timedelta(days=1)
-        startdate = datetime(today.year, today.month -1  , 1)
-        enddate = datetime(today.year, today.month -1  , last_day_of_previous_month.day)
-
+        startdate = datetime(last.year, last.month   , 1)
+        enddate = datetime(today.year, today.month-1  , 1)
     mask=(demand_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (demand_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
-
-    # demand_tabledata = demand_tabledata.loc[mask]
+    
+    demand_tabledata = demand_tabledata.loc[mask]
     
     df= demand_tabledata[demand_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
     df.dropna(inplace=True)
