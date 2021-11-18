@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 from datetime import date, datetime, timedelta
 import json
 import numpy as np
+import dateutil.relativedelta
 
 from .extensions import ray
 from .sqlinjection import *
@@ -365,7 +366,7 @@ def computeFCST(data):
     mask=(fcst_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (fcst_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     fcst_tabledata = fcst_tabledata.loc[mask]
     df= fcst_tabledata[fcst_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
-    #print("Df",df)
+    print("Df",df)
     del startdate
     del enddate
     del fcst_tabledata
