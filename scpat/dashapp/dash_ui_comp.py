@@ -340,7 +340,7 @@ def generate_dash_table(dff):
    
     today = datetime.datetime.today()
     last_month = datetime.datetime(today.year, today.month -1, 1 )
-    val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
+    val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
     
     my_columns = [{'name': ['STATUS', i], 'id': i, 'editable':False, "type":'text'} for i in dff.columns if (i =='Date')]
 
