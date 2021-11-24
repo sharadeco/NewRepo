@@ -20,8 +20,8 @@ class Anios_DemandData(Base, db.Model):
     key = db.Column("Key",db.String(255), nullable= False)
     code_produit = db.Column("Code Produit", db.String(255), nullable=True)
     produit_designation = db.Column("Désignation", db.String(255), nullable=True)
-    divmapcode = db.Column("Division Mapping#Code Produit", db.String(255), nullable=True)
-    salesdiv = db.Column("Sales Div", db.String(255), nullable=True)    
+    divmapcode = db.Column("Sales Division", db.String(255), nullable=True)
+    salesdiv = db.Column("Division", db.String(255), nullable=True)    
     produit_fam = db.Column("Famille de produit", db.String(255), nullable=True)
     date = db.Column("Date",db.Date(), nullable=True)
     actuals = db.Column("Actuals",db.Float(), nullable=True, default=0)
@@ -47,7 +47,7 @@ class Anios_DemandData(Base, db.Model):
 
 
     def to_dict(self):
-        return  {"id":str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Division Mapping#Code Produit":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"Actuals":self.actuals,"KG":self.kg,"Update_timestamp": str(self.update_timestamp), "Sales Div": self.salesdiv}
+        return  {"id":str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Sales Division":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"Actuals":self.actuals,"KG":self.kg,"Update_timestamp": str(self.update_timestamp), "Division": self.salesdiv}
     
     def __repr__(self):
         return str(self.to_dict())
@@ -66,8 +66,8 @@ class Anios_ForecastData(Base, db.Model):
     key = db.Column("Key",db.String(255), nullable= False)
     code_produit = db.Column("Code Produit", db.String(255), nullable=True)
     produit_designation = db.Column("Désignation", db.String(255), nullable=True)
-    divmapcode = db.Column("Division Mapping#Code Produit", db.String(255), nullable=True)
-    salesdiv = db.Column("Sales Div", db.String(255), nullable=True)
+    divmapcode = db.Column("Sales Division", db.String(255), nullable=True)
+    salesdiv = db.Column("Division", db.String(255), nullable=True)
     produit_fam = db.Column("Famille de produit", db.String(255), nullable=True)
     date = db.Column("Date",db.Date(), nullable=True)
     forecast = db.Column("Forecast", db.Float(), nullable=True, default=0)
@@ -91,7 +91,7 @@ class Anios_ForecastData(Base, db.Model):
         self.salesdiv = salesdiv
 
     def to_dict(self): 
-        return {"id":str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Division Mapping#Code Produit":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"Forecast":self.forecast,"KG":self.kg,"Delete_Ind":self.delete_ind,"Update_timestamp": str(self.update_timestamp), "Sales Div": self.salesdiv}
+        return {"id":str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Sales Division":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"Forecast":self.forecast,"KG":self.kg,"Delete_Ind":self.delete_ind,"Update_timestamp": str(self.update_timestamp), "Division": self.salesdiv}
 
     def __repr__(self): 
         return str(self.to_dict())
@@ -110,7 +110,7 @@ class Anios_CalForecastData(Base, db.Model):
     key = db.Column("Key",db.String(255), nullable= False)
     code_produit = db.Column("Code Produit", db.String(255), nullable=True)
     produit_designation = db.Column("Désignation", db.String(255), nullable=True)
-    divmapcode = db.Column("Division Mapping#Code Produit", db.String(255), nullable=True)
+    divmapcode = db.Column("Sales Division", db.String(255), nullable=True)
     produit_fam = db.Column("Famille de produit", db.String(255), nullable=True)
     date = db.Column("Date",db.Date(), nullable=True)
     statforecast = db.Column("StatForecast", db.Float(), nullable=True, default=0)
@@ -121,7 +121,7 @@ class Anios_CalForecastData(Base, db.Model):
     username = db.Column("Username", db.String(255), nullable=True, default='')
     forecast_accuracy = db.Column("Forecast Accuracy", db.Float(), nullable=True, default=0)
     forecast_bias = db.Column("Forecast Bias", db.Float(), nullable=True, default=0)
-    salesdiv = db.Column("Sales Div", db.String(255), nullable=True)
+    salesdiv = db.Column("Division", db.String(255), nullable=True)
 
     update_timestamp = db.Column(db.DateTime(), nullable=True, default=with_timezone_cet, onupdate=with_timezone_cet)
     delete_ind = db.Column("Delete_Indicator",db.String(1), default='F')
@@ -149,7 +149,7 @@ class Anios_CalForecastData(Base, db.Model):
         self.salesdiv = salesdiv
         
     def to_dict(self): 
-        return { "id": str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Division Mapping#Code Produit":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"StatForecast":self.statforecast, "Forecast":self.forecast, "KG": self.kg ,"Comments":self.comments ,"Update_timestamp":str(self.update_timestamp), "Delete_Indicator":self.delete_ind, "Forecast Accuracy":self.forecast_accuracy, "Forecast Bias":self.forecast_bias, "Username":self.username, "Sales Div":self.salesdiv}
+        return { "id": str(self.uid),"Key":self.key,"Code Produit":self.code_produit,"Désignation":self.produit_designation,"Sales Division":self.divmapcode,"Famille de produit":self.produit_fam,"Date":self.date,"StatForecast":self.statforecast, "Forecast":self.forecast, "KG": self.kg ,"Comments":self.comments ,"Update_timestamp":str(self.update_timestamp), "Delete_Indicator":self.delete_ind, "Forecast Accuracy":self.forecast_accuracy, "Forecast Bias":self.forecast_bias, "Username":self.username, "Division":self.salesdiv}
 
     def __repr__(self):
         return str(self.to_dict())
