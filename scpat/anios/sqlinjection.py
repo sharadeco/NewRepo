@@ -25,7 +25,7 @@ def checkdbsession():
     database = 'SC-PAT-DB'
     username = 'SCPAT'
     password = 'Ecolab@1234'
-    cnxn1 = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+    cnxn1 = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn1.cursor()
     return cursor
     #if db is None: 
@@ -61,7 +61,7 @@ def convert_demand_to_json(df, pobj):
         json_obj.seek(0,0)
         with FileLock(pobj + ".lock"):
             for index, row in df.iterrows():
-                data=Anios_DemandData(unique_id(), row['Key'], row['Code Produit_x'], row['Désignation'], row['Code Produit_y'], row['Famille de produit'], 
+                data=Anios_DemandData(unique_id(), row['Key'], row['Code Produit'], row['Désignation'], row['Sales Division'], row['Famille de produit'], 
                                         row['Date'].strftime('%Y-%m-%d'), row['Qté Fact'], row['Kg sold'], 'F', with_timezone_cet, row['Division'])
                 
                 # print("Demand record:", data)
@@ -97,14 +97,14 @@ def convert_fcst_to_json(df, flag, pobj):
         with FileLock(pobj + ".lock"):
             for index, row in df.iterrows():
                 if flag == True:
-                    data=Anios_ForecastData(unique_id(), row['Key'], row['Code Produit_x'], row['Désignation'], row['Code Produit_y'], row['Famille de produit'], 
+                    data=Anios_ForecastData(unique_id(), row['Key'], row['Code Produit'], row['Désignation'], row['Sales Division'], row['Famille de produit'], 
                                     row['Date'].strftime('%Y-%m-%d'), row['Qté Fact'], row['Kg sold'], "F", with_timezone_cet, row['Division'])
                     # print("Forecast record ", data)
                 else:
-                    data=Anios_CalForecastData(unique_id(), row['Key'], row['Code Produit'], "DUMMY", row['Division Mapping#Code Produit'], row['Famille de produit'],
-                                     row['Date'].strftime('%Y-%m-%d'), row['Qté Fact'], row['Qté Fact'], row['Qté Fact'], "", with_timezone_cet, "F", '', 0, 0, row['Sales Div'])
+                    data=Anios_CalForecastData(unique_id(), row['Key'], row['Code Produit'], "DUMMY", row['Sales Division'], row['Famille de produit'],
+                                     row['Date'].strftime('%Y-%m-%d'), row['Qté Fact'], row['Qté Fact'], row['Qté Fact'], "", with_timezone_cet, "F", '', 0, 0, row['Division'])
                     
-                
+
                 json.dump(json.loads(data.to_json()), json_obj, ensure_ascii=False)
                 json_obj.write("\n")
                 count+=1    
@@ -139,7 +139,8 @@ def insert_to_db_from_json(filename,type):
             for data in r:
                 obj = json.loads(data)
                 values_list.append(obj)
-
+            print("In the function where it will insert data from json file")
+            #db.session.connect()
             db.session.execute(stmt, values_list)
             db.session.commit()
             message = "Loaded "+ str(len(values_list)) +" actual demand value in the database."
@@ -158,6 +159,7 @@ def insert_to_db_from_json(filename,type):
                 obj = json.loads(data)
                 values_list.append(obj)
 
+            #db.session.connect()
             db.session.execute(stmt, values_list)
             db.session.commit()
             message = "Loaded "+ str(len(values_list)) +" actual forecast value in the database."
@@ -204,12 +206,12 @@ def fetch_records(datatype):
                        +"SELECT [id]" 
                        + ",[Code Produit] "
                        + ",[Désignation] "
-                       + ",[Division Mapping#Code Produit]"
+                       + ",[Sales Division]"
                        + ",[Famille de produit]"
                        + ",[Date]"
                        + ",[Actuals]"
                        + ",[KG]"
-                       + ",[Sales Div]"
+                       + ",[Division]"
                        + ",[key] as [Key] "
                        + " FROM [dbo].[Anios_DemandData] "
                        + " where delete_ind = 'F'"
@@ -220,12 +222,12 @@ def fetch_records(datatype):
         sql = str( "SELECT [id]" 
                        + ",[Code Produit] "
                        + ",[Désignation] "
-                       + ",[Division Mapping#Code Produit]"
+                       + ",[Sales Division]"
                        + ",[Famille de produit]"
                        + ",[Date]"
                        + ",[Forecast]"
                        + ",[KG]"
-                       + ",[Sales Div]"
+                       + ",[Division]"
                        + ",[key] as [Key] "
                        + " FROM [dbo].[Anios_ForecastData] "
                        + " where delete_ind = 'F'")
@@ -234,13 +236,14 @@ def fetch_records(datatype):
         sql = str( "SELECT [id]" 
                        + ",[Code Produit] "
                        + ",[Désignation] "
-                       + ",[Division Mapping#Code Produit]"
+                       + ",[Sales Division]"
                        + ",[Famille de produit]"
                        + ",[Date]"
                        + ",[StatForecast]"
                        + ",[Forecast]"
                        + ",[Comments]"
                        + ",[KG]"
+                       + ",[Division]"
                        + ",[key] as [Key] "
                        + " FROM [dbo].[Anios_CalForecastData] "
                        + " where delete_indicator = 'F'")
@@ -322,19 +325,19 @@ def update_records(column, table):
         #this is to prevent duplicate entries, majorly for Demand and Forecast Data
         if table == "Demand":
             sql = str( sql_timezone                    
-                   +"Update dbo.[Anios_DemandData] set dbo.[Anios_DemandData].Delete_Ind = 'T', 						 "
+                    +"Update dbo.[Anios_DemandData] set dbo.[Anios_DemandData].Delete_Ind = 'T', 						 "
                     +"dbo.[Anios_DemandData].[Update_timestamp] = @datevar_CET                                           "
                     +"WHERE DATEPART(year, dbo.[Anios_DemandData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND  "
                     +"DATEPART(month, dbo.[Anios_DemandData].[Update_timestamp])	<= datepart(month, @datevar_CET) AND  "
                      #---------------------------Only overwrite the last month and upcoming data------------------------- 
-                    "dbo.[Anios_DemandData].[Date]  !< DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET)-12, 0)  AND "
+                    #"dbo.[Anios_DemandData].[Date]  !< DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET)-12, 0)  AND "
                     # +"DATEPART(month, dbo.[Anios_DemandData].[Date])		    >= datepart(month,@datevar_CET)- 1) AND  "
                     +"dbo.[Anios_DemandData].[Delete_Ind] = 'F'	 ")            
             sqlD = str( sql_timezone                    
-                    +"Delete from dbo.[Anios_DemandData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET)-12, 0)")
+                    +"Delete from dbo.[Anios_DemandData] ")
             db.session.execute(sqlD)
             db.session.commit()
-                
+
         if table == "Forecast":
             sql = str( sql_timezone
                     +"Update dbo.[Anios_ForecastData] set dbo.[Anios_ForecastData].Delete_Ind = 'T', "
@@ -349,7 +352,14 @@ def update_records(column, table):
                     +" DATEPART(month, dbo.[Anios_ForecastData].[Date])		    <= datepart(month,@datevar_CET)) )   AND  "
                     +"dbo.[Anios_ForecastData].[Delete_Ind] = 'F'     ") 
 
-        if table == "Calculated": 
+            sqlF = str( sql_timezone                    
+                    +"Delete from dbo.[Anios_DemandData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0)")
+            db.session.execute(sqlF)
+            db.session.commit()
+
+
+
+        if table == "Calculated":                
             sql = str(sql_timezone
                     +"Update dbo.[Anios_CalForecastData] set dbo.[Anios_CalForecastData].Delete_Indicator = 'T', "
                     +"dbo.[Anios_CalForecastData].[Update_timestamp] = @datevar_CET "
@@ -397,8 +407,9 @@ def update_records(column, table):
         db.session.execute(sql1)
         db.session.commit()
         db.session.execute(sql2)
-        
-    
+        db.session.commit()
+
+      
     print("[LOG ]: Executing  "+ sql)
     
     del sql_timezone
