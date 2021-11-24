@@ -256,10 +256,12 @@ def computeDemand(dem_data, div_data):
         enddate = datetime(today.year, today.month-1  , 1)
     mask=(demand_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (demand_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     
-    #demand_tabledata = demand_tabledata.loc[mask]
+    demand_tabledata = demand_tabledata.loc[mask]
     
     df= demand_tabledata[demand_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
+    nan_value = float("NaN")
     df.dropna(inplace=True)
+    df.dropna(subset = ["Sales Division"], inplace=True)
 
     del enddate
     del startdate
@@ -317,8 +319,12 @@ def computeForecast(dem_data, div_data):
     mask=(fcst_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (fcst_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     fcst_tabledata = fcst_tabledata.loc[mask]
     df= fcst_tabledata[fcst_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
+    
+    nan_value = float("NaN")
     df.dropna(inplace=True)
-    #print("In the compute Fcst function *******************************     now")
+    df.dropna(subset = ["Sales Division"], inplace=True)
+
+    print("In the compute Fcst function *******************************     now")
 
     del enddate
     del startdate
