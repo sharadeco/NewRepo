@@ -4,9 +4,10 @@ import pandas as pd
 import os
 from openpyxl import load_workbook
 from datetime import date, datetime, timedelta
+import dateutil.relativedelta
+
 import json
 import numpy as np
-import dateutil.relativedelta
 
 from .extensions import ray
 from .sqlinjection import *
@@ -21,30 +22,31 @@ def checkDFTab(data, tabname):
     
     else: #if forecast
         path = os.path.join(excel_pathhead, "Anios_temp_forecast_data.csv")
-
-    if 'Code Produit' in data.columns and 'Désignation' in data.columns and 'Date' in data.columns and 'Qté Fact' in data.columns and 'Division' in data.columns and 'Famille de produit' in data.columns and 'Kg sold' in data.columns:
-        data1= data[['Division','Désignation','Code Produit','Date','Qté Fact','Famille de produit', 'Kg sold']].copy()
+        print("path")
+    if 'Code Produit' in data.columns and 'Désignation' in data.columns and 'Date' in data.columns and 'Qté Fact' in data.columns and 'Division' in data.columns and 'Famille de produit' in data.columns and 'Kg sold' in data.columns and 'Sales Division' in data.columns:
+        data1= data[['Division','Désignation','Code Produit','Date','Qté Fact','Famille de produit', 'Kg sold','Sales Division']].copy()
         data1['Date'] = pd.to_datetime(data1['Date'], format='%Y-%m-%d')        
         data1['Qté Fact'].replace(np.nan,0,inplace=True)
         data1['Kg sold'].replace(np.nan,0,inplace=True)
-        
+        data1['Sales Division'] = data1['Sales Division'].str.upper()
         data1['Division'] = data1['Division'].str.upper()
         data1['Division'] = data1['Division'].str.strip()
        
         data1['Famille de produit'] = data1['Famille de produit'].str.strip()
 
         df = []
-        for val in data1['Code Produit']:
-            try: 
-                x = format(float(val), '.0f')
-            except: 
-                x = val.strip()
-                x = x.lstrip('0')
-                x = x.replace(' ','')
+        #for val in data1['Code Produit']:
+        #    try: 
+        #        x = format(float(val), '.0f')
+        #    except: 
+        #        x = val.strip()
+                #x = x.lstrip('0')
+        #        x = x.replace(' ','')
 
-            df.append(str(x))
+        #    df.append(str(x))
 
-        data1['Code Produit'] = df
+        #data1['Code Produit'] = df
+        data1['Code Produit'] = data1['Code Produit'].str.strip()
 
         del df 
 
@@ -63,8 +65,8 @@ def checkDFTab(data, tabname):
 def checkDivisionTab(div, tabname):
     path = os.path.join(excel_pathhead, "Anios_temp_division_data.csv")
 
-    if 'Division' in div.columns and 'Sales Org / Country' in div.columns and 'Code Produit' in div.columns:
-        data1= div[['Division','Sales Org / Country','Code Produit']].copy()
+    if 'Division' in div.columns and 'Sales Division' in div.columns and 'Code Produit' in div.columns:
+        data1= div[['Division','Sales Division','Code Produit']].copy()
         
         data1['Division'] = data1['Division'].str.upper()
         data1['Division'] = data1['Division'].str.strip()
@@ -82,7 +84,7 @@ def checkDivisionTab(div, tabname):
         message= "'" + tabname + "' sheet is missing some columns! \nRequired columns: ['Division', 'Sales Org / Country', 'Code Produit'] \nProvided columns: "+ str(list(div.columns))
         print("[ERROR ]:" + message)
         flash(message, "danger")    
-        return False
+        return True
 
 def checkAniosData(name):
     file= os.path.join(excel_pathhead, name)
@@ -115,7 +117,7 @@ def checkAniosData(name):
         try:
             demand=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Demand')
         except:
-            demand=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='DEMAND')
+            demand=pd.read_excel(file, engine="opgenpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='DEMAND')
         
         
         try:
@@ -123,7 +125,7 @@ def checkAniosData(name):
         except:
             forecast= pd.read_excel(file,  engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='FORECAST')
         
-        div= pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Division Mapping')
+        #div= pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Division Mapping')
 
 
         fdem = ray.get(checkDFTab.remote(demand, 'DEMAND')) == True
@@ -132,10 +134,10 @@ def checkAniosData(name):
         ffcs = ray.get(checkDFTab.remote(forecast, "FORECAST")) == True
         del forecast
         
-        fdiv = ray.get(checkDivisionTab.remote(div, 'DIVISION')) == True
-        del div
+       # fdiv = ray.get(checkDivisionTab.remote(div, 'DIVISION')) == True
+       # del div
         
-    return fdem & ffcs & fdiv    #will return true when data from all 3 sheets has been stored in temp file Anios_temp_data.csv
+    return fdem & ffcs     #will return true when data from all 3 sheets has been stored in temp file Anios_temp_data.csv
 
 
 def checkAniosDemandForecast(name):
@@ -172,25 +174,27 @@ def checkAniosDemandForecast(name):
             return False
 
         else:
+            data1=data
             demand= data[data['Data type'].isin(['demand','Demand','DEMAND'])] 
 
             forecast= data[data['Data type'].isin(['FORECAST','Forecast','Consensus Fcst','forecast'])] 
+            
+            div=data1[data1['Data type'].isin(['demand','Demand','DEMAND'])] 
+            #try:
+                
 
-            try:
-                div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='Divisions correspondance')
-
-            except:            
-                div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='matching export Jia Jie')
+            #except:            
+            #    div=pd.read_excel(file, engine="openpyxl", na_values=['#VALUE!', '#DIV/0!', '#NAME!', '#N/A!'], sheet_name='matching export Jia Jie')
 
 
             fdem = ray.get(checkDFTab.remote(demand, 'DEMAND')) == True
-            del demand
+            #del demand
 
             ffcs = ray.get(checkDFTab.remote(forecast, 'FORECAST')) == True
-            del forecast
+            #del forecast
             
             fdiv = ray.get(checkDivisionTab.remote(div, 'DIVISION')) == True
-            del div
+            #del div
 
         return fdem & ffcs & fdiv    #will return true when data from both the sheets will be stored in the temp files
 
@@ -219,16 +223,22 @@ def allowed_file(name):
 
 
 #computing the demand based on the previous month data 
-def computeDemand(dem_data, div_data):    
+def computeDemand(dem_data, div_data):
     
-    data1 = pd.merge(dem_data,div_data,on ='Division',how ='inner')
-    demand_tabledata = data1[['Code Produit_x','Désignation','Code Produit_y','Qté Fact', 'Division','Famille de produit','Date', 'Kg sold']].copy()
+    print("The demand data ",dem_data)
+    print("The division data ",dem_data)
+    data1=pd.DataFrame(dem_data)
+    print("demand sales division ",data1['Sales Division'])
+    print("demand sales division ",data1['Division'])
+
+    #data1 = pd.merge(dem_data,div_data,on ='Sales Division',how ='inner')
+    demand_tabledata = data1[['Code Produit','Désignation','Qté Fact', 'Division','Famille de produit','Date', 'Kg sold','Sales Division']].copy()
     
     del data1
     del dem_data
     del div_data
     
-    demand_tabledata['Key'] = demand_tabledata['Code Produit_x'].astype(str) + "*" + demand_tabledata['Famille de produit'] + "*" + demand_tabledata['Code Produit_y']+ "*" + demand_tabledata['Division']
+    demand_tabledata['Key'] = demand_tabledata['Code Produit'].astype(str) + "*" + demand_tabledata['Famille de produit'] + "*" + demand_tabledata['Sales Division']+ "*" + demand_tabledata['Division']
 
     #filtering the logic of the dataframe to accomodate only previous month data in demand
     demand_tabledata['Date'] = pd.to_datetime(demand_tabledata['Date'], format='%Y-%m-%d')        
@@ -246,7 +256,7 @@ def computeDemand(dem_data, div_data):
         enddate = datetime(today.year, today.month-1  , 1)
     mask=(demand_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (demand_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     
-    demand_tabledata = demand_tabledata.loc[mask]
+    #demand_tabledata = demand_tabledata.loc[mask]
     
     df= demand_tabledata[demand_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
     df.dropna(inplace=True)
@@ -284,26 +294,31 @@ def computeDemand(dem_data, div_data):
 
 def computeForecast(dem_data, div_data):
     
-    data1 = pd.merge(dem_data,div_data,on ='Division',how ='inner')
-    fcst_tabledata = data1[['Code Produit_x','Désignation','Code Produit_y','Qté Fact', 'Division','Kg sold', 'Famille de produit','Date']].copy()
+    data1=pd.DataFrame(dem_data)
+    print("forecast sales division ",data1['Sales Division'])
+    print("forecast sales division ",data1['Division'])
+
+    #print(data1)
+    #data1 = pd.merge(dem_data,div_data,on ='Division',how ='inner')
+    fcst_tabledata = data1[['Code Produit','Désignation','Qté Fact', 'Division','Famille de produit','Date', 'Kg sold','Sales Division']].copy()
     del data1
     del dem_data
     del div_data
 
-    fcst_tabledata['Key'] = fcst_tabledata['Code Produit_x'].astype(str) + "*" + fcst_tabledata['Famille de produit'] + "*" + fcst_tabledata['Code Produit_y']+ "*" + fcst_tabledata['Division']
+    fcst_tabledata['Key'] = fcst_tabledata['Code Produit'].astype(str) + "*" + fcst_tabledata['Famille de produit'] + "*" + fcst_tabledata['Sales Division']+ "*" + fcst_tabledata['Division']
 
     #filtering the logic of the dataframe to accomadate only previous month data in demand
     fcst_tabledata['Date'] = pd.to_datetime(fcst_tabledata['Date'], format='%Y-%m-%d')
     today = date.today()
 
     startdate = datetime(today.year, today.month  , 1)
-    enddate = datetime(today.year + 1, 12 , 31)
+    enddate = datetime(today.year + 2, 12 , 31)
     
     mask=(fcst_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (fcst_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     fcst_tabledata = fcst_tabledata.loc[mask]
     df= fcst_tabledata[fcst_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
     df.dropna(inplace=True)
-    print("In the compute Fcst function *******************************     now")
+    #print("In the compute Fcst function *******************************     now")
 
     del enddate
     del startdate
@@ -345,12 +360,12 @@ def computeFCST(data):
     data['Famille de produit'] = dummy.str.partition("*")[0]
 
     dummy = dummy.str.partition("*")[2]
-    data['Division Mapping#Code Produit'] = dummy.str.partition("*")[0]
-    data['Sales Div'] = dummy.str.partition("*")[2]
+    data['Sales Division'] = dummy.str.partition("*")[0]
+    data['Division'] = dummy.str.partition("*")[2]
 
     del dummy
     
-    fcst_tabledata= pd.melt(data, id_vars=['Key', 'Code Produit', 'Famille de produit','Division Mapping#Code Produit','Sales Div'], var_name='Date', value_name='Qté Fact')
+    fcst_tabledata= pd.melt(data, id_vars=['Key', 'Code Produit', 'Famille de produit','Sales Division','Division'], var_name='Date', value_name='Qté Fact')
     print("Hello data changed")
     del data
     
@@ -361,7 +376,7 @@ def computeFCST(data):
     today = date.today()
 
     startdate = datetime(today.year, today.month  , 1)
-    enddate = datetime(today.year + 1, 12, 31 )
+    enddate = datetime(today.year + 2, 12, 31 )
 
     mask=(fcst_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (fcst_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     fcst_tabledata = fcst_tabledata.loc[mask]
