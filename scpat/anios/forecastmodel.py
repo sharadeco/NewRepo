@@ -25,16 +25,16 @@ def runmodel_low(df):
     del df
 
     Mean=pd.DataFrame(pd.DataFrame(df_low['mean']).reset_index().iloc[:,1:])
-    df_mean_low=pd.concat([Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean],axis=1)
+    df_mean_low=pd.concat([Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean,Mean],axis=1)
     df_low=df_low.transpose().copy()
 
     df_low=df_low.drop(['mean'],axis=0)
     df_low=df_low.drop(['sum'],axis=0)
 
     
-    plus_month_period = 9
+    plus_month_period = 18
     date_range = df_low.index + pd.DateOffset(months=plus_month_period)
-    date_range=date_range[-9:]
+    date_range=date_range[-18:]
 
 
     final_low=pd.DataFrame(df_mean_low.values,columns= date_range)   
@@ -63,16 +63,47 @@ def runmodel_high(df):
     TimeSeries1.drop(['mean'],inplace=True)
     TimeSeries1.drop(['sum'],inplace=True)
 
+    
+    ############################# outlier detection #########################
+
+    ln=len(TimeSeries1.columns)
+
+    cn = 0
+    while (cn < ln):
+
+         
+         IQR = TimeSeries1.iloc[:,cn].quantile(0.75) - TimeSeries1.iloc[:,cn].quantile(0.25)
+         print(IQR)
+   
+   
+         lower_bound = TimeSeries1.iloc[:,cn].quantile(0.25)- (3 * IQR)
+         upper_bound = TimeSeries1.iloc[:,cn].quantile(0.75)+ (3 * IQR)
+
+    
+
+         (TimeSeries1.iloc[:,cn][(TimeSeries1.iloc[:,cn] < (lower_bound))]) = np.nan
+
+    
+         TimeSeries1.iloc[:,6].fillna(0,inplace=True)
+    
+         TimeSeries1.iloc[:,cn][(TimeSeries1.iloc[:,cn] > (upper_bound))]=np.nan
+         TimeSeries1.iloc[:,cn].fillna(0,inplace=True)
+         cn=cn+1
+         print("count:",cn)
+    
+    #TimeSeries1.dropna(how='all', axis=1,inplace=True)    
+
+
     ###################  creating the train and validation set  ####################################
 
     train_data = TimeSeries1[0:]
-    plus_month_period = 9
+    plus_month_period = 18
 
     # pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
     print(TimeSeries1.index)
 
     test_data = TimeSeries1.index + pd.DateOffset(months=plus_month_period)
-    test_data=test_data[-9:]
+    test_data=test_data[-18:]
     
     ############################ AUTO ARIMA ############################################
     ## automatically defines value of I to give the best fit for the model
@@ -90,9 +121,9 @@ def runmodel_high(df):
         holt_winter=auto_arima(X,trace=True,
                             error_action='ignore',  
                             suppress_warnings=True, 
-                            stepwise=True,scoring='mse',default='lbfgs')
+                            stepwise=True,scoring='mse')
         holt_winter.fit(X)
-        test_predictions=holt_winter.predict(n_periods=9)
+        test_predictions=holt_winter.predict(n_periods=18)
         result.append(list(test_predictions))
         print("count=",i)
 
@@ -122,7 +153,7 @@ def runmodel(data):
     data1=data[['Date','Actuals','Key']].copy()
     data1.dropna(inplace=True)
     
-    data1=data1[data1['Date']>=(now+dateutil.relativedelta.relativedelta(months=-25))]
+    #data1=data1[data1['Date']>=(now+dateutil.relativedelta.relativedelta(months=-25))]
  
     TimeSeries = data1.pivot_table(index=['Date'],values='Actuals', columns=['Key'],aggfunc='sum')
 
