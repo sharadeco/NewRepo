@@ -77,13 +77,13 @@ def register_callback(app, df):
         if len(input_prodcode) == 0:
             input_prodcode = df['Product Code']
         if len(input_motherdiv) == 0:
-            input_motherdiv = df['Mother Division']
+            input_motherdiv = df['Sales Division']
         if len(input_materialtype) == 0:
             input_materialtype = df['Material Type']
         if len(input_salesdiv) == 0:
-            input_salesdiv = df['Sales Div']
+            input_salesdiv = df['Division']
 
-        df_filtered = df[ (df['Month'].isin(input_month)) & (df['Product Code'].isin(input_prodcode)) & (df['Mother Division'].isin(input_motherdiv)) & (df['Sales Div'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
+        df_filtered = df[ (df['Month'].isin(input_month)) & (df['Product Code'].isin(input_prodcode)) & (df['Sales Division'].isin(input_motherdiv)) & (df['Division'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
 
         if len(sort_by):
             dff= df_filtered.sort_values(
@@ -109,7 +109,7 @@ def register_callback(app, df):
         State("table-paging-with-graph", "data"))
     def download_as_csv(n_clicks, table_data):
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
-                'Product Description': df['Product Description'], 'Mother Division': df['Mother Division'], 'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Statistical Forecast ' : df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Forecast KG    '    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
+                'Product Description': df['Product Description'], 'Mother Division': df['Sales Division'], 'Sales Division': df['Division'], 'Material Type': df['Material Type'], 'Statistical Forecast ' : df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Forecast KG    '    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
 
@@ -189,12 +189,12 @@ def ui_layout(app, df):
                                                         dcc.Dropdown(
                                                                 id='table-paging-with-graph-dropdown-mother-div',
                                                                 options=[
-                                                                    {'label': i, 'value': i} for i in df['Mother Division'].unique()
+                                                                    {'label': i, 'value': i} for i in df['Sales Division'].unique()
                                                                 ],
                                                                 value=[''],
                                                                 multi=True,
                                                                 searchable=True,
-                                                                placeholder='Filter by Mother Division...',
+                                                                placeholder='Filter by Sales Division...',
                                                                 style={'fontSize':15, "border-left":"0px", "border-right":"0px", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                                     'font-family':"'Roboto', sans-serif",'margin': '5px'}
                                                             ),
@@ -205,12 +205,12 @@ def ui_layout(app, df):
                                                         dcc.Dropdown(
                                                                 id='table-paging-with-graph-dropdown-sales-div',
                                                                 options=[
-                                                                    {'label': i, 'value': i} for i in df['Sales Div'].unique()
+                                                                    {'label': i, 'value': i} for i in df['Division'].unique()
                                                                 ],
                                                                 value=[''],
                                                                 multi=True,
                                                                 searchable=True,
-                                                                placeholder='Filter by Sales Division...',
+                                                                placeholder='Filter by Division...',
                                                                 style={'fontSize':15, "border-left":"0px", "border-right":"0px", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                                     'font-family':"'Roboto', sans-serif",'margin': '5px'}
                                                             ),                                                     
