@@ -27,14 +27,37 @@ def register_callback(app, df):
 
 
     @app.callback(
+        Output('table_paging_with_graph_dropdown_unique', 'options'),
+        Output('table_paging_with_graph_dropdown_unique', 'value'),
+        Input('table_paging_with_graph_dropdown_sales', 'value' ))
+    def get_key_options(chosen_input_salesdiv):
+       data1 = df
+       dff = data1[data1['Division']==chosen_input_salesdiv]
+       chosen_input_uid = [{'label': c, 'value': c} for c in sorted(dff['Key'].unique())]
+       values_selected = [x['value'] for x in chosen_input_uid]
+       return chosen_input_uid, values_selected
+
+#    @app.callback(
+#        Output('table_paging_with_graph_dropdown_unique', 'options'),
+#        Input('table_paging_with_graph_dropdown_unique', 'value' ))
+#    def get_key_value(chosen_input_uid):
+#       print(chosen_input_uid)
+#       return [ k['value'] for k in chosen_input_uid]
+
+    @app.callback(
         Output('table-graph-div', 'children'),
         Output('output-provider','children'),
-        Input('table-paging-with-graph-dropdown-unique', 'value'))
-    def update_filteredtable(input_uid):
+        Input('table_paging_with_graph_dropdown_unique', 'value'),
+        Input('table_paging_with_graph_dropdown_sales', 'value' ))
+    def update_filteredtable(input_uid ,input_salesdiv):
         
-        if (input_uid is None) or (input_uid == ''):
-            message = " No SKU is selected "
+        if ((input_uid is None) or  (type(input_uid)== list) or  (input_salesdiv is None) ):
+            message = " No SKU  or Talentia Div is selected "
             df_filtered = df
+            print("Inside if loop")
+            print("Input Key is ",input_uid)
+            print("Input Sales Div is ",input_salesdiv)
+
             consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Final Forecast','Unique Id']]
             Data_grouped=consensus1.groupby('Date').sum()
             Data_grouped['Forecast Bias'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error con']/Data_grouped['Demand KG'])
@@ -49,14 +72,23 @@ def register_callback(app, df):
             df_filtered['Forecast Bias']=df_filtered['Forecast Bias']*100
             df_filtered['Forecast Accuracy']=df_filtered['Forecast Accuracy'].round(2)
             df_filtered['Forecast Bias']=df_filtered['Forecast Bias'].round(2)
+            
 
         else:
-            dummy = input_uid.partition("*")[2] 
-            message = str("Selected SKU : \n Product Code " + input_uid.partition("*")[0] + ", Material Type " + dummy.partition("*")[0] )
-            dummy = dummy.partition("*")[2]
-            message = str(message + ", Mother Division " + dummy.partition("*")[0] + ", Sales Division " + dummy.partition("*")[2] )
-            
-            df_filtered = df[df['Key'] == str(input_uid)]
+            print("Inside esle loop")
+            print("Input Key is ",input_uid)
+            print("Input Sales Div is ",input_salesdiv)
+            print("Input Key is ",len(input_uid))
+            print("Input Key  type is ",type(input_uid))
+            print("Input Sales Div is ",len(input_salesdiv))
+
+            #dummy = input_uid.split("*")
+            #message = str("Selected SKU : \n Product Code " + dummy[0] + ", Material Type " + dummy[1] )
+            #dummy = dummy.partition("*")[2]
+            #message = str(message + ", Sales Division " + dummy[2] + ", Division " + dummy[3] )
+            message = "Input uid selected is",input_uid
+            df_filtered1 = df[df['Division'] == str(input_salesdiv)]
+            df_filtered  = df_filtered1[df_filtered1['Key']==str(input_uid)]
         
         dff , dfff = change_table_layout(df_filtered)
         
@@ -90,15 +122,15 @@ def register_callback(app, df):
         if len(input_prodcode) == 0:
             input_prodcode = df['Product Code']
         if len(input_motherdiv) == 0:
-            input_motherdiv = df['Mother Division']
+            input_motherdiv = df['Sales Division']
         if len(input_materialtype) == 0:
             input_materialtype = df['Material Type']
         if len(input_salesdiv) == 0:
-            input_salesdiv = df['Sales Div']
+            input_salesdiv = df['Division']
         if len(input_desc) == 0:
             input_desc = df['Product Description']
 
-        df_filtered = df[(df['Month'].isin(input_month)) & (df['Product Description'].isin(input_desc)) & (df['Product Code'].isin(input_prodcode)) & (df['Mother Division'].isin(input_motherdiv)) & (df['Sales Div'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
+        df_filtered = df[(df['Month'].isin(input_month)) & (df['Product Description'].isin(input_desc)) & (df['Product Code'].isin(input_prodcode)) & (df['Sales Division'].isin(input_motherdiv)) & (df['Division'].isin(input_salesdiv)) & (df['Material Type'].isin(input_materialtype))]
         dff , dfff = change_table_layout(df_filtered)
         
         del dff        
@@ -120,8 +152,8 @@ def register_callback(app, df):
     def download_as_csv(n_clicks, table_data):
         
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
-                'Product Description': df['Product Description'], 'Mother Division': df['Mother Division'], 
-                'Sales Division': df['Sales Div'], 'Material Type': df['Material Type'], 'Statistical Forecast'    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
+                'Product Description': df['Product Description'], 'Sales Division': df['Sales Division'], 
+                'Division': df['Division'], 'Material Type': df['Material Type'], 'Statistical Forecast'    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
                 'Forecast KG'    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
@@ -141,7 +173,7 @@ def register_callback(app, df):
     @app.callback(Output('output-provider-2','children'),
         Input('save-button-to-database', 'submit_n_clicks'),
         State('table-paging-with-graph','data'),
-        State('table-paging-with-graph-dropdown-unique','value'))
+        State('table_paging_with_graph_dropdown_unique','value'))
     def update_to_db(submit_n_clicks, table_data, key):
 
         if not submit_n_clicks:
@@ -159,8 +191,8 @@ def register_callback(app, df):
 
                        
             today = datetime.datetime.today()
-            last_month = datetime.datetime(today.year, today.month -1, 1 )
-            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
+            last_month = datetime.datetime(today.year, today.month, 1 )
+            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
             blankcsv.reset_index(level=0, inplace=True)
             
             blankcsv = blankcsv[blankcsv['Date'].isin(val.strftime("%Y-%m-01").astype(str))]
@@ -189,7 +221,7 @@ def register_callback(app, df):
     @app.callback(Output('output-provider-3','children'),
         Input('save-consensus-to-database', 'submit_n_clicks'),
         State('table-paging-with-graph','data'),
-        State('table-paging-with-graph-dropdown-unique','value'))
+        State('table_paging_with_graph_dropdown_unique','value'))
     def update_tocon_db(submit_n_clicks, table_data, key):
 
         if not submit_n_clicks:
@@ -207,8 +239,8 @@ def register_callback(app, df):
 
                        
             today = datetime.datetime.today()
-            last_month = datetime.datetime(today.year, today.month -1, 1 )
-            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
+            last_month = datetime.datetime(today.year, today.month , 1 )
+            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
             blankcsv.reset_index(level=0, inplace=True)
             
             blankcsv = blankcsv[blankcsv['Date'].isin(val.strftime("%Y-%m-01").astype(str))]
@@ -339,7 +371,7 @@ def generate_dash_graph(dfff):
 def generate_dash_table(dff):
    
     today = datetime.datetime.today()
-    last_month = datetime.datetime(today.year, today.month -1, 1 )
+    last_month = datetime.datetime(today.year, today.month, 1 )
     val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
     
     my_columns = [{'name': ['STATUS', i], 'id': i, 'editable':False, "type":'text'} for i in dff.columns if (i =='Date')]
@@ -435,24 +467,24 @@ def generate_dropdowns(df):
     mother_div_filter= dcc.Dropdown(
                                     id='table-paging-with-graph-dropdown-mother-div',
                                     options=[
-                                        {'label': i, 'value': i} for i in df['Mother Division'].unique()
+                                        {'label': i, 'value': i} for i in df['Sales Division'].unique()
                                     ],
                                     value=[''],
                                         multi=True,
                                     searchable=True,
-                                    placeholder='Filter by Mother Division...',
+                                    placeholder='Filter by Sales Division...',
                                     style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                         'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )                                                     
     sales_div_filter= dcc.Dropdown(
                                     id='table-paging-with-graph-dropdown-sales-div',
                                     options=[
-                                        {'label': i, 'value': i} for i in df['Sales Div'].unique()
+                                        {'label': i, 'value': i} for i in df['Division'].unique()
                                     ],
                                     value=[''],
                                     multi=True,
                                     searchable=True,
-                                    placeholder='Filter by Sales Division...',
+                                    placeholder='Filter by Division...',
                                     style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                         'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )                                                     
@@ -597,17 +629,50 @@ def generate_layout(df):
                                             ])
                                         
                                         ]),
-                                        dbc.Col([
+                                       dbc.Col([
                                             dbc.Col([html.Div(
                                                 [
                                                 dcc.Dropdown(
-                                                        id='table-paging-with-graph-dropdown-unique',
+                                                        id='table_paging_with_graph_dropdown_sales',
                                                         options=[
-                                                            {'label': i, 'value': i} for i in df['Key'].unique()
+                                                            {'label': i, 'value': i} for i in df['Division'].unique()
                                                         ],
-                                                        value='',
+                                                        value='FRS',
                                                             multi=False,
                                                         searchable=True,
+                                                        clearable=False,
+                                                        placeholder='Filter by Talencia Div...',
+                                                        style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
+                                                            'font-family':"'Roboto', sans-serif",'margin': '5px'}
+                                                        )                                                     
+                                                ]
+                                            ),]),
+                                            dbc.Col([html.Div(id='output-provider', style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", 
+                                                                "border-top":"0px", "border-radius":"0px", "border-color":"teal",
+                                                                'font-family':"'Roboto', sans-serif",'margin': '5px'})
+                                            ]),
+                                            dbc.Col([html.Div(id='output-provider-2', style={'fontSize':15, 
+                                                                "border-left":"0px", "border-right":"0px", "width":"100%", 
+                                                                "border-top":"0px", "border-radius":"0px", "border-color":"teal",
+                                                                'font-family':"'Roboto', sans-serif",'margin': '5px'})
+                                            ]),
+                                            dbc.Col([html.Div(id='output-provider-3', style={'fontSize':15, 
+                                                                "border-left":"0px", "border-right":"0px", "width":"100%", 
+                                                                "border-top":"0px", "border-radius":"0px", "border-color":"teal",
+                                                                'font-family':"'Roboto', sans-serif",'margin': '5px'})
+                                            ])
+                                        ]),       
+                                       dbc.Col([
+                                            dbc.Col([html.Div(
+                                                [
+                                                dcc.Dropdown(
+                                                        id='table_paging_with_graph_dropdown_unique',
+                                                        options=[
+                                                             {'label': i, 'value': i} for i in df['Key'].unique()
+                                                            ],
+                                                            multi=False,
+                                                             value=[],
+                                                        searchable=True,                                
                                                         placeholder='Filter by Key...',
                                                         style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                             'font-family':"'Roboto', sans-serif",'margin': '5px'}
@@ -665,3 +730,12 @@ def generate_layout(df):
                             ],
                     )], 
         type="circle")
+
+
+
+
+
+
+
+
+
