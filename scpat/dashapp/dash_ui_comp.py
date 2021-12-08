@@ -57,12 +57,17 @@ def register_callback(app, df):
             print("Inside if loop")
             print("Input Key is ",input_uid)
             print("Input Sales Div is ",input_salesdiv)
-
-            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Final Forecast','Unique Id']]
+            print(df_filtered.columns)
+            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Error stat','ABS stat','Final Forecast','Unique Id']]
             Data_grouped=consensus1.groupby('Date').sum()
             Data_grouped['Forecast Bias'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error con']/Data_grouped['Demand KG'])
             Data_grouped['FA_1']=Data_grouped['ABS con']/Data_grouped['Demand KG']
             Data_grouped['Forecast Accuracy']=np.where(Data_grouped['FA_1']>1,0,1-(Data_grouped['FA_1']))
+            Data_grouped['Bias stat'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error stat']/Data_grouped['Demand KG'])
+            Data_grouped['FA_1 Stat']=Data_grouped['ABS stat']/Data_grouped['Demand KG']
+            Data_grouped['FA stat']=np.where(Data_grouped['FA_1 Stat']>1,0,1-(Data_grouped['FA_1 Stat']))
+
+
             df_filtered=Data_grouped
             df_filtered.reset_index(inplace=True)
             df_filtered.columns
@@ -72,7 +77,10 @@ def register_callback(app, df):
             df_filtered['Forecast Bias']=df_filtered['Forecast Bias']*100
             df_filtered['Forecast Accuracy']=df_filtered['Forecast Accuracy'].round(2)
             df_filtered['Forecast Bias']=df_filtered['Forecast Bias'].round(2)
-            
+            df_filtered['FA stat']=df_filtered['FA stat'].round(2)*100
+            df_filtered['Bias stat']=df_filtered['Bias stat']*100
+            df_filtered['FA stat']=df_filtered['FA stat'].round(2)
+            df_filtered['Bias stat']=df_filtered['Bias stat'].round(2)
 
         else:
             print("Inside esle loop")
@@ -147,13 +155,13 @@ def register_callback(app, df):
 
     @app.callback(
         Output("download", "data"),
-        Input("save-button-to-full-csv", "cks"),
+        Input("save-button-to-full-csv", "n_clicks"),
         State("table-paging-with-graph", "data"))
     def download_as_csv(n_clicks, table_data):
         
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
                 'Product Description': df['Product Description'], 'Sales Division': df['Sales Division'], 
-                'Division': df['Division'], 'Material Type': df['Material Type'], 'Statistical Forecast'    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
+                'Division': df['Division'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
                 'Forecast KG'    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
@@ -276,7 +284,8 @@ def change_table_layout(df):
         'Statistical Forecast' :  df['Model Forecast' ].astype(float), 'Consensus Forecast':  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
-        'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float), 
+        'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float),
+        'FA stat': df['FA stat'].astype(float), 'Bias stat':df['Bias stat'].astype(float),
         }
     #'Comments':df['Comments']
     dff = pd.DataFrame.from_dict(a)
@@ -393,6 +402,7 @@ def generate_dash_table(dff):
                         id='table-paging-with-graph',
                         columns=my_columns,
                         data= dff.to_dict('records'),
+                        editable=True,
                         merge_duplicate_headers=True,
                         export_format="csv",   #exports what is visible on screen
                         style_cell={'padding': '5px', 'fontSize':10, 'font-family':"'Roboto', sans-serif"},
@@ -418,9 +428,10 @@ def generate_dash_table(dff):
                             },
                             {
                                 'if': {
-                                    'row_index': [0,2,3,4,5,6,7],
+                                    'row_index': [0,2,3,4,5,6,7,8,9],
                                 },
                                 'color': 'black'
+
                             },
                         ]
                             
