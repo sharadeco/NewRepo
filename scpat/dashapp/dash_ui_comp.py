@@ -420,7 +420,7 @@ def generate_dash_table(dff):
                         style_data_conditional=[
                             {
                                 'if': {
-                                    'row_index': [1,8],
+                                    'row_index': [1,10],
                                 },
                                 'backgroundColor': '#6c757d',
                                 'color': 'black',
