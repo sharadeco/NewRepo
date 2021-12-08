@@ -25,7 +25,7 @@ def checkdbsession():
     database = 'SC-PAT-DB'
     username = 'SCPAT'
     password = 'Ecolab@1234'
-    cnxn1 = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+    cnxn1 = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn1.cursor()
     return cursor
     #if db is None: 
@@ -249,7 +249,7 @@ def fetch_records(datatype):
                        + " where delete_indicator = 'F'")
 
     elif datatype == 'SUMMARY': #fetching the entire SUMMARY that is generated using the view dbo.Anios_SummaryDetails
-        sql = str( " select newid() as [id],         "
+        sql = str( " select newid() as [id],       "
                     +" [Unique Id],                  "
                     +" [Key],                        "
                     +" [Date],                       "
@@ -270,6 +270,8 @@ def fetch_records(datatype):
                     +" [ABS con],                    "
                     +" [Forecast Accuracy],          "
                     +" [Forecast Bias],              "
+                    +" [Error stat],                 "
+                    +" [ABS stat],                   "
                     +" [FA stat],                    "
                     +" [Bias stat],                  "
                     +" [User],                       "
