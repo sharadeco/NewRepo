@@ -399,10 +399,10 @@ def update_records(column, table):
                     +"WHERE [Anios_CalForecastData].[Key] = t1.[Key] "
                     +"AND [Anios_CalForecastData].[Date] = t1.[Date]  and [Anios_CalForecastData].Username  like '%,%' and  [Anios_CalForecastData].Delete_Indicator='F' and [Anios_CalForecastData].[Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) ")             
 
-        sql2 = str(sql_timezone
-                +"DELETE    FROM dbo.Anios_CalForecastData "
-                +"WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND "
-                +"Delete_Indicator='F'  and Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
+      #  sql2 = str(sql_timezone
+      #          +"DELETE    FROM dbo.Anios_CalForecastData "
+      #          +"WHERE DATEPART(year, dbo.[Anios_CalForecastData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND "
+      #          +"Delete_Indicator='F'  and Username not like '%,%'  and [Date] >= DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0) and [Key] IN (SELECT  distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
         
         data = db.session.execute(sql) 
         db.session.commit()
