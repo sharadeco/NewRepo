@@ -408,8 +408,8 @@ def update_records(column, table):
         db.session.commit()
         db.session.execute(sql1)
         db.session.commit()
-        db.session.execute(sql2)
-        db.session.commit()
+        #db.session.execute(sql2)
+        #db.session.commit()
 
       
     print("[LOG ]: Executing  "+ sql)
