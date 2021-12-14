@@ -46,8 +46,8 @@ def checkDFTab(data, tabname):
         #    df.append(str(x))
 
         #data1['Code Produit'] = df
-        data1['Code Produit'] = data1['Code Produit'].str.strip()
-
+        data1['Code Produit'] = data1['Code Produit']
+        
         del df 
 
         data1.to_csv(path, encoding="utf-8", index=False, header = True)
@@ -152,7 +152,7 @@ def checkAniosDemandForecast(name):
         return False
 
     #if the file doesn't contain the division mapping in the sheet
-    elif 'Divisions correspondance' not in wb.sheetnames and 'matching export Jia Jie' not in wb.sheetnames:
+    elif (('Data' not in wb.sheetnames) and ('DATA' not in wb.sheetnames)):
         message = "'Divisions correspondance' or 'Matching export Jia Jie' sheet is missing in " + name +" file! \nFile contains the sheets : " + wb.sheetnames
         print("[ERROR ]:" + message)    
         flash(message, "danger")
@@ -225,15 +225,15 @@ def allowed_file(name):
 #computing the demand based on the previous month data 
 def computeDemand(dem_data, div_data):
     
-    print("The demand data ",dem_data)
-    print("The division data ",dem_data)
+   
     data1=pd.DataFrame(dem_data)
-    print("demand sales division ",data1['Sales Division'])
-    print("demand sales division ",data1['Division'])
-
+    print("The demand data ",data1)
+   
     #data1 = pd.merge(dem_data,div_data,on ='Sales Division',how ='inner')
     demand_tabledata = data1[['Code Produit','Désignation','Qté Fact', 'Division','Famille de produit','Date', 'Kg sold','Sales Division']].copy()
     
+    print('The demand table data is ',demand_tabledata)
+    print('The Code Produit and qty is ', data1[['Code Produit','Désignation','Qté Fact']])
     del data1
     del dem_data
     del div_data
