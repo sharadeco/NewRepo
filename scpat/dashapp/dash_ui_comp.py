@@ -405,6 +405,7 @@ def generate_dash_table(dff):
     del my_columns_non_editable
     del my_columns_editable
     del last_month
+    print(dff.iloc[1])
 
     table_div= dash_table.DataTable(
                         id='table-paging-with-graph',
@@ -479,7 +480,7 @@ def generate_dropdowns(df):
                                 value=[''],
                                 multi=True,
                                 searchable=True,
-                                placeholder='Filter by Product Code...',
+                                placeholder='Filter by Item...',
                                 style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                     'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )                                
@@ -491,7 +492,7 @@ def generate_dropdowns(df):
                                     value=[''],
                                         multi=True,
                                     searchable=True,
-                                    placeholder='Filter by Sales Division...',
+                                    placeholder='Filter by Selling division...',
                                     style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                         'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )                                                     
@@ -503,7 +504,7 @@ def generate_dropdowns(df):
                                     value=[''],
                                     multi=True,
                                     searchable=True,
-                                    placeholder='Filter by Division...',
+                                    placeholder='Filter by Mother division...',
                                     style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                         'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )                                                     
@@ -515,7 +516,7 @@ def generate_dropdowns(df):
                                 value=[''],
                                 searchable=True,
                                 multi=True,
-                                placeholder='Filter by Material Type...', 
+                                placeholder='Filter by Product type...', 
                                 style={'fontSize':10, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                     'font-family':"'Roboto', sans-serif",'margin': '5px'}
                             )
@@ -650,7 +651,7 @@ def generate_layout(df):
                                         ]),
                                        dbc.Col([
                                             dbc.Col([html.Div(
-                                                [
+                                                [  "Selling Division",
                                                 dcc.Dropdown(
                                                         id='table_paging_with_graph_dropdown_sales',
                                                         options=[
@@ -660,7 +661,7 @@ def generate_layout(df):
                                                             multi=False,
                                                         searchable=True,
                                                         clearable=False,
-                                                        placeholder='Filter by Talencia Div...',
+                                                        placeholder='Filter by Selling division...',
                                                         style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                             'font-family':"'Roboto', sans-serif",'margin': '5px'}
                                                         )                                                     
@@ -683,7 +684,7 @@ def generate_layout(df):
                                         ]),       
                                        dbc.Col([
                                             dbc.Col([html.Div(
-                                                [
+                                                ["Product * Selling Division",
                                                 dcc.Dropdown(
                                                         id='table_paging_with_graph_dropdown_unique',
                                                         options=[
@@ -692,7 +693,7 @@ def generate_layout(df):
                                                             multi=False,
                                                              value=[],
                                                         searchable=True,                                
-                                                        placeholder='Filter by Key...',
+                                                        placeholder='Filter by Product * Selling division...',
                                                         style={'fontSize':15, "border-left":"0px", "border-right":"0px", "width":"100%", "border-top":"0px", "border-radius":"0px", "border-color":"teal",
                                                             'font-family':"'Roboto', sans-serif",'margin': '5px'}
                                                         )                                                     
@@ -749,12 +750,3 @@ def generate_layout(df):
                             ],
                     )], 
         type="circle")
-
-
-
-
-
-
-
-
-
