@@ -425,7 +425,7 @@ def generate_dash_table(dff):
 
                     })
          for i in range(1,ll):
-               if (dff.iloc[1,i]!=dff.iloc[0,i]):
+               if (dff.iloc[1,i].round()!=dff.iloc[0,i].round()):
                    styles.append(
                        {
                           'if': {
