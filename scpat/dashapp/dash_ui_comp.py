@@ -405,7 +405,41 @@ def generate_dash_table(dff):
     del my_columns_non_editable
     del my_columns_editable
     del last_month
-    print(dff.iloc[1])
+    def dash_table_conditonal(dff):
+         styles = []
+         ll=len(dff.columns)
+         styles.append({
+                                'if': {
+                                    'row_index': [1,10],
+                                },
+                                'backgroundColor': '#6c757d',
+                                'color': 'black',
+                                'type' : 'text'
+                            })
+         styles.append({
+         
+                        'if': {
+                            'row_index': [0,2,3,4,5,6,7,8,9],
+                        },
+                        'color': 'black'
+
+                    })
+         for i in range(1,ll):
+               if (dff.iloc[1,i]!=dff.iloc[0,i]):
+                   styles.append(
+                       {
+                          'if': {
+                                 'row_index':1,
+                                 'column_id':dff.columns[i]
+                              },
+                          'backgroundColor': '#ffb6c1'
+                       }
+                       
+                       )
+
+         return styles
+    
+    
 
     table_div= dash_table.DataTable(
                         id='table-paging-with-graph',
@@ -426,23 +460,7 @@ def generate_dash_table(dff):
                                 'color': 'white'
                             } ,
                         ],
-                        style_data_conditional=[
-                            {
-                                'if': {
-                                    'row_index': [1,10],
-                                },
-                                'backgroundColor': '#6c757d',
-                                'color': 'black',
-                                'type' : 'text'
-                            },
-                            {
-                                'if': {
-                                    'row_index': [0,2,3,4,5,6,7,8,9],
-                                },
-                                'color': 'black'
-
-                            },
-                        ]
+                        style_data_conditional=dash_table_conditonal(dff)
                             
                     )
 
