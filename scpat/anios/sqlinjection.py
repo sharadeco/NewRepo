@@ -355,7 +355,7 @@ def update_records(column, table):
                     +"dbo.[Anios_ForecastData].[Delete_Ind] = 'F'     ") 
 
             sqlF = str( sql_timezone                    
-                    +"Delete from dbo.[Anios_ForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0)")
+                    +"Delete from dbo.[Anios_ForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0) ")
             db.session.execute(sqlF)
             db.session.commit()
 
@@ -406,12 +406,19 @@ def update_records(column, table):
                     +"WHERE [Anios_CalForecastData].[Key] = t1.[Key]  "
                     +"AND [Anios_CalForecastData].[Date] = t1.[Date]  and [Anios_CalForecastData].Username  not like '%,%' and  [Anios_CalForecastData].Delete_Indicator='F' and [Anios_CalForecastData].[Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)  "
                     +"and [Anios_CalForecastData].[Key] IN (SELECT distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
+
+        sqlCalF = str( sql_timezone                    
+                +"Delete from dbo.[Anios_CalForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0) and  dbo.[Anios_CalForecastData].[Username] not like '%,%' and Delete_Indicator='F' ")
+
+        
         
         data = db.session.execute(sql) 
         db.session.commit()
         db.session.execute(sql1)
         db.session.commit()
         db.session.execute(sql2)
+        db.session.commit()
+        db.session.execute(sqlCalF)
         db.session.commit()
 
       
