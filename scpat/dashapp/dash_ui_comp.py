@@ -208,7 +208,7 @@ def register_callback(app, df):
             query = []
             for index, row in blankcsv.iterrows():
                 try: 
-                    x = format(float(row['Consensus Forecast']), '.2f')
+                    x = format(float(row['Commercial Forecast (ST)']), '.2f')
                 except: 
                     x = 0.0
                     count=0
@@ -264,7 +264,7 @@ def register_callback(app, df):
             query = []
             for index, row in blankcsv.iterrows():
                 try: 
-                    x = format(float(row['Consensus Forecast']), '.2f')
+                    x = format(float(row['Commercial Forecast (ST)']), '.2f')
                 except: 
                     x = 0.0
                     count=0
