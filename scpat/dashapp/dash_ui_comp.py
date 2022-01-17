@@ -289,11 +289,11 @@ def register_callback(app, df):
 def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
-        'Statistical Forecast' :  df['Model Forecast' ].astype(float), 'Consensus Forecast':  df[ 'Final Forecast' ].astype(float),
-        'Actual Forecast'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand'    :  df[ 'Actual Demand'  ].astype(float),
+        'Statistical forecast (ST)' :  df['Model Forecast' ].astype(float), 'Commercial Forecast (ST)':  df[ 'Final Forecast' ].astype(float),
+        'Actual Forecast (ST)'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand (ST)'    :  df[ 'Actual Demand'  ].astype(float),
         'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
-        'Forecast Accuracy': df['Forecast Accuracy'].astype(float), 'Forecast Bias':df['Forecast Bias'].astype(float),
-        'FA stat': df['FA stat'].astype(float), 'Bias stat':df['Bias stat'].astype(float),
+        'Forecast accuracy (%)': df['Forecast Accuracy'].astype(float), 'Forecast Bias (%)':df['Forecast Bias'].astype(float),
+        'FA Stat (%)': df['FA stat'].astype(float), 'Bias Stat (%)':df['Bias stat'].astype(float),
         }
     #'Comments':df['Comments']
     dff = pd.DataFrame.from_dict(a)
