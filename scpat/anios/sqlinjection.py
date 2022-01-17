@@ -263,7 +263,7 @@ def fetch_records(datatype):
                     +" [Actual Demand],              "
                     +" [Demand KG],                  "
                     +" [Actual Forecast],            "
-                    +" [Forecast KG],                "
+                    +" [Final Forecast KG],          "
                     +" [Model Forecast],             "
                     +" [Model Forecast KG],          "
                     +" [Error con],                  "
