@@ -109,7 +109,7 @@ def register_callback(app, df):
         State("table-paging-with-graph", "data"))
     def download_as_csv(n_clicks, table_data):
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
-                'Product Description': df['Product Description'], 'Mother Division': df['Sales Division'], 'Sales Division': df['Division'], 'Material Type': df['Material Type'], 'Statistical Forecast ' : df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Final Forecast KG'    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
+                'Product Description': df['Product Description'], 'Mother Division': df['Sales Division'], 'Sales Division': df['Division'], 'Material Type': df['Material Type'], 'Statistical Forecast ' : df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Forecast KG'    :  df[ 'Fnal Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
 
