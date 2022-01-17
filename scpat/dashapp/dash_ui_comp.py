@@ -58,7 +58,7 @@ def register_callback(app, df):
             print("Input Key is ",input_uid)
             print("Input Sales Div is ",input_salesdiv)
             print(df_filtered.columns)
-            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Error stat','ABS stat','Final Forecast','Unique Id']]
+            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Final Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Error stat','ABS stat','Final Forecast','Unique Id']]
             Data_grouped=consensus1.groupby('Date').sum()
             Data_grouped['Forecast Bias'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error con']/Data_grouped['Demand KG'])
             Data_grouped['FA_1']=Data_grouped['ABS con']/Data_grouped['Demand KG']
@@ -162,7 +162,7 @@ def register_callback(app, df):
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
                 'Product Description': df['Product Description'], 'Sales Division': df['Sales Division'], 
                 'Division': df['Division'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
-                'Forecast KG'    :  df[ 'Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
+                'Forecast KG'    :  df[ 'Final Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
 
@@ -291,7 +291,7 @@ def change_table_layout(df):
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
         'Statistical forecast (ST)' :  df['Model Forecast' ].astype(float), 'Commercial Forecast (ST)':  df[ 'Final Forecast' ].astype(float),
         'Actual Forecast (ST)'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand (ST)'    :  df[ 'Actual Demand'  ].astype(float),
-        'Forecast KG'    :  df[ 'Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
+        'Forecast KG'    :  df[ 'Final Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast accuracy (%)': df['Forecast Accuracy'].astype(float), 'Forecast Bias (%)':df['Forecast Bias'].astype(float),
         'FA Stat (%)': df['FA stat'].astype(float), 'Bias Stat (%)':df['Bias stat'].astype(float),
         }
