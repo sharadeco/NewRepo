@@ -255,7 +255,7 @@ def computeDemand(dem_data, div_data):
         enddate = datetime(today.year, today.month-1  , 1)
     mask=(demand_tabledata['Date'] >= startdate.strftime('%Y-%m-%d')) & (demand_tabledata['Date'] <= enddate.strftime('%Y-%m-%d'))
     
-    #demand_tabledata = demand_tabledata.loc[mask]
+    demand_tabledata = demand_tabledata.loc[mask]
     
     df= demand_tabledata[demand_tabledata['Famille de produit'].isin(['MATERIELS','PRODUITS FINIS'])].copy()
     nan_value = float("NaN")
