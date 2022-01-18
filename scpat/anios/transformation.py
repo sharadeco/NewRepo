@@ -267,7 +267,6 @@ def computeDemand(dem_data, div_data):
     del demand_tabledata
     del mask
     del today
-    del last_day_of_previous_month
     
     serialized = []
     json_file = os.path.join(excel_pathhead, 'raw_demand.json')
