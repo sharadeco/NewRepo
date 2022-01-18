@@ -247,8 +247,7 @@ def computeDemand(dem_data, div_data):
     today = date.today()
     if(today.month == 1):
         startdate = datetime(last.year, last.month   , 1)
-        enddate = datetime(today.year, today.month-1  , 1)
-    
+        enddate = datetime(today.year-1, 12  , 1)    
     
     else:
         last_day_of_previous_month = today.replace(day=1) - timedelta(days=1)
