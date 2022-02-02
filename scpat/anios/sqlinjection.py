@@ -263,6 +263,7 @@ def fetch_records(datatype):
                     +" [Actual Demand],              "
                     +" [Demand KG],                  "
                     +" [Actual Forecast],            "
+                    +" [Actual Forecast KG],         "
                     +" [Final Forecast KG],          "
                     +" [Model Forecast],             "
                     +" [Model Forecast KG],          "
@@ -332,7 +333,7 @@ def update_records(column, table):
                     +"WHERE DATEPART(year, dbo.[Anios_DemandData].[Update_timestamp]) <= datepart(year,@datevar_CET) AND  "
                     +"DATEPART(month, dbo.[Anios_DemandData].[Update_timestamp])	<= datepart(month, @datevar_CET) AND  "
                      #---------------------------Only overwrite the last month and upcoming data------------------------- 
-                    +"dbo.[Anios_DemandData].[Date]  !< DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET)-12, 0)  AND "
+                    #"dbo.[Anios_DemandData].[Date]  !< DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET)-12, 0)  AND "
                     # +"DATEPART(month, dbo.[Anios_DemandData].[Date])		    >= datepart(month,@datevar_CET)- 1) AND  "
                     +"dbo.[Anios_DemandData].[Delete_Ind] = 'F'	 ")            
             sqlD = str( sql_timezone                    
@@ -348,14 +349,15 @@ def update_records(column, table):
                     +"DATEPART(month, dbo.[Anios_ForecastData].[Update_timestamp])    <= datepart(month, @datevar_CET) AND "
                     
                     #---------------------------Only overwrite the upcoming data----------------------------------------
-                    +"((DATEPART(year, dbo.[Anios_ForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
-                    +" DATEPART(month, dbo.[Anios_ForecastData].[Date])		    >= datepart(month,@datevar_CET))      OR  "
-                    +" (DATEPART(year, dbo.[Anios_ForecastData].[Date])			> datepart(year,@datevar_CET) 	     AND  "
-                    +" DATEPART(month, dbo.[Anios_ForecastData].[Date])		    <= datepart(month,@datevar_CET)) )   AND  "
+                    +"dbo.[Anios_ForecastData].[Date] >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0)	     AND  "
+#                    +"((DATEPART(year, dbo.[Anios_ForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
+#                    +" DATEPART(month, dbo.[Anios_ForecastData].[Date])		    >= datepart(month,@datevar_CET))      OR  "
+#                    +" (DATEPART(year, dbo.[Anios_ForecastData].[Date])			> datepart(year,@datevar_CET) 	     AND  "
+#                    +" DATEPART(month, dbo.[Anios_ForecastData].[Date])		    <= datepart(month,@datevar_CET)) )   AND  "
                     +"dbo.[Anios_ForecastData].[Delete_Ind] = 'F'     ") 
 
             sqlF = str( sql_timezone                    
-                    +"Delete from dbo.[Anios_ForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0) ")
+                    +"Delete from dbo.[Anios_ForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0)")
             db.session.execute(sqlF)
             db.session.commit()
 
@@ -369,10 +371,6 @@ def update_records(column, table):
                     +"DATEPART(month, dbo.[Anios_CalForecastData].[Update_timestamp])    <= datepart(month, @datevar_CET) AND "
                     
                     #---------------------------Only overwrite the upcoming data----------------------------------------
-                    +"((DATEPART(year, dbo.[Anios_CalForecastData].[Date])		    = datepart(year,@datevar_CET) 	     AND  "
-                    +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    >= datepart(month,@datevar_CET))      OR  "
-                    +" (DATEPART(year, dbo.[Anios_CalForecastData].[Date])			> datepart(year,@datevar_CET) 	     AND  "
-                    +" DATEPART(month, dbo.[Anios_CalForecastData].[Date])		    <= datepart(month,@datevar_CET)) )   AND  "
                     #+" len(Comments)<>1 and len(Comments)<>0   AND  "
                     +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F' and  dbo.[Anios_CalForecastData].[Username] not like '%,%' ")             
 
@@ -381,6 +379,7 @@ def update_records(column, table):
 
             db.session.execute(sqlCalF)
             db.session.commit()
+
 
         data = db.session.execute(sql)
          
@@ -410,9 +409,10 @@ def update_records(column, table):
                     +"FROM (SELECT  * FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0))  t1  "
                     +"WHERE [Anios_CalForecastData].[Key] = t1.[Key]  "
                     +"AND [Anios_CalForecastData].[Date] = t1.[Date]  and [Anios_CalForecastData].Username  not like '%,%' and  [Anios_CalForecastData].Delete_Indicator='F' and [Anios_CalForecastData].[Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)  "
-                    +"and [Anios_CalForecastData].[Key] IN (SELECT distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")            
+                    +"and [Anios_CalForecastData].[Key] IN (SELECT distinct [Key] FROM dbo.Anios_CalForecastData WHERE  Username  like '%,%' and Delete_Indicator='F' and [Date]>=DATEADD(month, DATEDIFF(month, 0, @datevar_CET), 0)) ")             
+
         
-        
+
         data = db.session.execute(sql) 
         db.session.commit()
         db.session.execute(sql1)
