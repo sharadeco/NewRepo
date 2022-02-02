@@ -37,13 +37,6 @@ def register_callback(app, df):
        values_selected = [x['value'] for x in chosen_input_uid]
        return chosen_input_uid, values_selected
 
-#    @app.callback(
-#        Output('table_paging_with_graph_dropdown_unique', 'options'),
-#        Input('table_paging_with_graph_dropdown_unique', 'value' ))
-#    def get_key_value(chosen_input_uid):
-#       print(chosen_input_uid)
-#       return [ k['value'] for k in chosen_input_uid]
-
     @app.callback(
         Output('table-graph-div', 'children'),
         Output('output-provider','children'),
@@ -58,7 +51,7 @@ def register_callback(app, df):
             print("Input Key is ",input_uid)
             print("Input Sales Div is ",input_salesdiv)
             print(df_filtered.columns)
-            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Final Forecast KG', 'Model Forecast','Model Forecast KG','Error con','ABS con','Error stat','ABS stat','Final Forecast','Unique Id']]
+            consensus1=df_filtered[['Date','Actual Demand','Demand KG', 'Actual Forecast','Final Forecast KG', 'Model Forecast','Actual Forecast KG','Model Forecast KG','Error con','ABS con','Error stat','ABS stat','Final Forecast','Unique Id']]
             Data_grouped=consensus1.groupby('Date').sum()
             Data_grouped['Forecast Bias'] =np.where(Data_grouped['Demand KG']==0,0,Data_grouped['Error con']/Data_grouped['Demand KG'])
             Data_grouped['FA_1']=Data_grouped['ABS con']/Data_grouped['Demand KG']
@@ -81,6 +74,9 @@ def register_callback(app, df):
             df_filtered['Bias stat']=df_filtered['Bias stat']*100
             df_filtered['FA stat']=df_filtered['FA stat'].round(2)
             df_filtered['Bias stat']=df_filtered['Bias stat'].round(2)
+            df_filtered['Final Forecast KG']= df_filtered['Final Forecast KG'].round(2)
+            df_filtered['Model Forecast KG']= df_filtered['Model Forecast KG'].round(2)
+
 
         else:
             print("Inside esle loop")
@@ -161,8 +157,8 @@ def register_callback(app, df):
         
         dff = pd.DataFrame.from_dict({'Unique Id': df['Unique Id'], 'Date': df['Date'], 'Year': df['Year'], 'Month': df['Month'], 'Product Code': df['Product Code'], 
                 'Product Description': df['Product Description'], 'Sales Division': df['Sales Division'], 
-                'Division': df['Division'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],
-                'Forecast KG'    :  df[ 'Final Forecast KG'    ],'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG		'	: df[ 'Demand KG'      ] })
+                'Division': df['Division'], 'Material Type': df['Material Type'], 'Model Forecast '    :  df[ 'Model Forecast' ],'Actual Forecast'    :  df[ 'Actual Forecast'],'Actual Forecast KG'    :  df[ 'Actual Forecast KG'],
+                'Commercial Forecast KG'    :  df[ 'Final Forecast KG'    ],'Stat Forecast KG'    :  df['Model Forecast KG'] , 'Actual Demand  '    :  df[ 'Actual Demand'  ],'Demand KG'	: df[ 'Demand KG'      ] })
         if not n_clicks:
             raise PreventUpdate
 
@@ -290,8 +286,8 @@ def change_table_layout(df):
     
     a = {'Date': df['Date'].astype(str), 'Unique Id': df['Unique Id'].astype(str), 
         'Statistical forecast (ST)' :  df['Model Forecast' ].astype(float), 'Commercial Forecast (ST)':  df[ 'Final Forecast' ].astype(float),
-        'Actual Forecast (ST)'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand (ST)'    :  df[ 'Actual Demand'  ].astype(float),
-        'Forecast KG'    :  df[ 'Final Forecast KG' ].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
+        'Actual Forecast (ST)'  :  df[ 'Actual Forecast'].astype(float), 'Actual Demand (ST)'    :  df[ 'Actual Demand'  ].astype(float),'Stat Forecast KG':df['Model Forecast KG'].astype(float),
+        'Commercial Forecast KG'    :  df[ 'Final Forecast KG' ].astype(float),'Actual Forecast KG':df['Actual Forecast KG'].astype(float),'Demand KG': df[ 'Demand KG'].astype(float), 
         'Forecast accuracy (%)': df['Forecast Accuracy'].astype(float), 'Forecast Bias (%)':df['Forecast Bias'].astype(float),
         'FA Stat (%)': df['FA stat'].astype(float), 'Bias Stat (%)':df['Bias stat'].astype(float),
         }
@@ -319,11 +315,11 @@ def generate_dash_graph(dfff):
     
     x=dfff["Date"]
     fig = go.Figure()
-    for i in ["Demand KG","Forecast KG"]:
+    for i in ["Demand KG","Commercial Forecast KG"]:
         color = 'black'
         if i == "Demand KG":
             color = 'teal'
-        elif i == "Forecast KG":
+        elif i == "Commercial Forecast KG":
             color = 'red'
             
         fig.add_trace(
@@ -410,7 +406,7 @@ def generate_dash_table(dff):
          ll=len(dff.columns)
          styles.append({
                                 'if': {
-                                    'row_index': [1,10],
+                                    'row_index': [1,12],
                                 },
                                 'backgroundColor': '#6c757d',
                                 'color': 'black',
@@ -419,7 +415,7 @@ def generate_dash_table(dff):
          styles.append({
          
                         'if': {
-                            'row_index': [0,2,3,4,5,6,7,8,9],
+                            'row_index': [0,2,3,4,5,6,7,8,9,10,11,12],
                         },
                         'color': 'black'
 
