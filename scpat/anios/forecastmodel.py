@@ -31,13 +31,20 @@ def runmodel_low(df):
     df_low=df_low.drop(['mean'],axis=0)
     df_low=df_low.drop(['sum'],axis=0)
 
-    
-    plus_month_period = 18
-    date_range = df_low.index + pd.DateOffset(months=plus_month_period)
-    date_range=date_range[-18:]
+
+    date_range = pd.DataFrame(df_low.index) + pd.DateOffset(months=9)
+    date_range1=date_range + pd.DateOffset(months=9)
+    date_final=pd.concat([date_range,date_range1],axis=0)
+    date_final1=date_final[date_final>df_low.index[(len(df_low.index))-1]]
+    date_final1.dropna(inplace=True)
+
+    date_final1=pd.DataFrame(date_final1)
+    date_final1.reset_index(inplace=True)
+    date_final1=date_final1[0:18:]
+    date_final1['Date']
 
 
-    final_low=pd.DataFrame(df_mean_low.values,columns= date_range)   
+    final_low=pd.DataFrame(df_mean_low.values,columns= date_final1['Date'])   
     final_low=final_low.transpose()
     final_low.columns=list(df_low.columns)
 
@@ -102,8 +109,18 @@ def runmodel_high(df):
     # pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=9)
     print(TimeSeries1.index)
 
-    test_data = TimeSeries1.index + pd.DateOffset(months=plus_month_period)
-    test_data=test_data[-18:]
+    date_range = pd.DataFrame(TimeSeries1.index) + pd.DateOffset(months=9)
+    date_range1=date_range + pd.DateOffset(months=9)
+    date_final=pd.concat([date_range,date_range1],axis=0)
+    date_final1=date_final[date_final>df_low.index[(len(df_low.index))-1]]
+    date_final1.dropna(inplace=True)
+
+    date_final1=pd.DataFrame(date_final1)
+    date_final1.reset_index(inplace=True)
+    date_final1=date_final1[0:18:]
+    date_final1['Date']
+
+    test_data=date_final1['Date']
     
     ############################ AUTO ARIMA ############################################
     ## automatically defines value of I to give the best fit for the model
