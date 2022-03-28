@@ -48,9 +48,9 @@ def runmodel_low(df):
     final_low=final_low.transpose()
     final_low.columns=list(df_low.columns)
 
-    del plus_month_period
     del Mean
     del date_range
+    del date_range1
     del df_mean_low
     del df_low
 
@@ -148,6 +148,8 @@ def runmodel_high(df):
     del test_predictions
     del train_data
     del holt_winter
+    del date_range
+    del date_range1
 
     final=pd.DataFrame(result,columns=test_data)    
     pred=final.transpose()
