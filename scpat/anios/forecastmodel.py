@@ -112,7 +112,7 @@ def runmodel_high(df):
     date_range = pd.DataFrame(TimeSeries1.index) + pd.DateOffset(months=9)
     date_range1=date_range + pd.DateOffset(months=9)
     date_final=pd.concat([date_range,date_range1],axis=0)
-    date_final1=date_final[date_final>df_low.index[(len(df_low.index))-1]]
+    date_final1=date_final[date_final>TimeSeries1.index[(len(TimeSeries1.index))-1]]
     date_final1.dropna(inplace=True)
 
     date_final1=pd.DataFrame(date_final1)
