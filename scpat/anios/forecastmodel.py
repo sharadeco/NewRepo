@@ -69,38 +69,7 @@ def runmodel_high(df):
     TimeSeries1=df_high.transpose()
     TimeSeries1.drop(['mean'],inplace=True)
     TimeSeries1.drop(['sum'],inplace=True)
-
     
-    ############################# outlier detection #########################
-
-    ln=len(TimeSeries1.columns)
-
-    cn = 0
-    while (cn < ln):
-
-         
-         IQR = TimeSeries1.iloc[:,cn].quantile(0.75) - TimeSeries1.iloc[:,cn].quantile(0.25)
-         print(IQR)
-   
-   
-         lower_bound = TimeSeries1.iloc[:,cn].quantile(0.25)- (3 * IQR)
-         upper_bound = TimeSeries1.iloc[:,cn].quantile(0.75)+ (3 * IQR)
-
-    
-
-         (TimeSeries1.iloc[:,cn][(TimeSeries1.iloc[:,cn] < (lower_bound))]) = np.nan
-
-    
-         TimeSeries1.iloc[:,6].fillna(0,inplace=True)
-    
-         TimeSeries1.iloc[:,cn][(TimeSeries1.iloc[:,cn] > (upper_bound))]=np.nan
-         TimeSeries1.iloc[:,cn].fillna(0,inplace=True)
-         cn=cn+1
-         print("count:",cn)
-    
-    #TimeSeries1.dropna(how='all', axis=1,inplace=True)    
-
-
     ###################  creating the train and validation set  ####################################
 
     train_data = TimeSeries1[0:]
