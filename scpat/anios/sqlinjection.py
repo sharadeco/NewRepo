@@ -372,7 +372,7 @@ def update_records(column, table):
                     
                     #---------------------------Only overwrite the upcoming data----------------------------------------
                     #+" len(Comments)<>1 and len(Comments)<>0   AND  "
-                    +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F' and  dbo.[Anios_CalForecastData].[Username] not like '%,%' ")             
+                    +"dbo.[Anios_CalForecastData].[Delete_Indicator] = 'F' and  dbo.[Anios_CalForecastData].[Username] not like '%,%'   and [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0) ")             
 
             sqlCalF = str( sql_timezone                    
                     +"Delete from dbo.[Anios_CalForecastData] where [Date]  >=DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_CET), 0) and  dbo.[Anios_CalForecastData].[Username] not like '%,%' and Delete_Indicator='F' ")
