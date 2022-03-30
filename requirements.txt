@@ -83,7 +83,7 @@ scipy
 selenium==3.141.0
 six==1.16.0
 SQLAlchemy==1.4.20
-statsmodels==0.12.2
+statsmodels==0.13.2
 tenacity==7.0.0
 threadpoolctl==2.1.0
 typing-extensions==3.10.0.0
