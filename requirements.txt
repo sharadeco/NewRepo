@@ -97,3 +97,4 @@ dash-extensions==0.0.58
 more-itertools==8.8.0
 flask-session~=0.3.2
 msal>=1.7,<2
+
