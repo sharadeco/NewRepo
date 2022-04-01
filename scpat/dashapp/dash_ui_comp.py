@@ -196,7 +196,7 @@ def register_callback(app, df):
                        
             today = datetime.datetime.today()
             last_month = datetime.datetime(today.year, today.month, 1 )
-            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
+            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=22)
             blankcsv.reset_index(level=0, inplace=True)
             
             blankcsv = blankcsv[blankcsv['Date'].isin(val.strftime("%Y-%m-01").astype(str))]
@@ -252,7 +252,7 @@ def register_callback(app, df):
                        
             today = datetime.datetime.today()
             last_month = datetime.datetime(today.year, today.month , 1 )
-            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
+            val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=22)
             blankcsv.reset_index(level=0, inplace=True)
             
             blankcsv = blankcsv[blankcsv['Date'].isin(val.strftime("%Y-%m-01").astype(str))]
@@ -385,7 +385,7 @@ def generate_dash_table(dff):
    
     today = datetime.datetime.today()
     last_month = datetime.datetime(today.year, today.month, 1 )
-    val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=18)
+    val = pd.date_range(last_month.strftime("%Y-%m-%d"), freq="M", periods=22)
     
     my_columns = [{'name': ['STATUS', i], 'id': i, 'editable':False, "type":'text'} for i in dff.columns if (i =='Date')]
 
