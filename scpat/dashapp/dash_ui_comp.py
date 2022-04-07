@@ -213,15 +213,9 @@ def register_callback(app, df):
                 +", [Forecast] = {} ".format(x)
                 +"where [Key] = '{}' ".format( key )
                 +" and cast([Date] as Date) = '{}'".format(row['Date'])) 
-                sql_new = str("Update dbo.[Anios_CalForecastData] set [Username] = '' "
-                +", [Forecast] = {} ".format(x)
-                +"where [Key] = '{}' ".format( key )
-                +"and round(StatForecast,0)=(Forecast) "
-                +" and cast([Date] as Date) = '{}'".format(row['Date']))
 
 
                 db.session.execute(sql)
-                db.session.execute(sql_new)
 
 
             db.session.commit()
