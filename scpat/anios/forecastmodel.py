@@ -135,7 +135,7 @@ def runmodel_high(df):
 
 
 @ray.remote(memory=10*1024)
-def runmodel(data):
+def runmodel(data,New_data):
     print('[LOG ]: Started running the forecasting model')
     
     data1=data[['Code Produit','Division','Sales Division','Actuals', 'Famille de produit','Date','Key']].copy()
@@ -274,7 +274,37 @@ def runmodel(data):
     final_forecast=final_forecast.transpose().copy()
     final_forecast.index.name='Key'
 
+    def myFun(New_data):
+
+        df = New_data[''].astype(str).str.split("-", expand=True)
+    
+        start_date=datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
+        end_date=datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
+    
+        list_date=[]
+        for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
+            print(dt)
+        list_date.append(dt.strftime("%d-%m-%Y") )
+    
+        df.rename(columns={0:"Key"},inplace=True)
+    
+        df.drop(1,axis=1,inplace=True)
+    
+        for x in list_date:
+         df[x]=''
+    
+        df.reset_index()
+        df.set_index("Key",inplace=True)
+    
+    
+        test2= pd.concat([final_forecast,df],axis=0)
+        return test2
+    
+
+    df_new = myFun(New_data)
+    df_new.reset_index(inplace=True)
+    df_new.set_index("Key",inplace=True)
     path = os.path.join(path_head, "Anios_temp_arima_output.csv") 
-    final_forecast.to_csv(path, encoding="utf-8")
+    df_new.to_csv(path, encoding="utf-8")
     
     return path
