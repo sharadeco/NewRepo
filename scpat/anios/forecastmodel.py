@@ -281,8 +281,8 @@ def runmodel(data,New_data):
 
         df = New_data[''].astype(str).str.split("-", expand=True)
     
-        start_date=datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
-        end_date=datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
+        start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
+        end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
     
         list_date=[]
         for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
