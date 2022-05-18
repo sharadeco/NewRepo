@@ -228,9 +228,9 @@ def rundatamodel():
         def process_runmodel(): 
             data = fetch_records('DEMAND')
             start = time.time()
-
+            New_data = fetch_records('NEW_SKU')
             print("[LOG ]: Started at process at: "+ str(start))
-            filename = ray.get(runmodel.remote(data))
+            filename = ray.get(runmodel.remote(data,New_data))
             statistical_df = pd.read_csv(filename, encoding="utf-8")
             print(statistical_df)
             computeFCST(statistical_df)        
