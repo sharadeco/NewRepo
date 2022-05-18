@@ -216,6 +216,12 @@ def fetch_records(datatype):
                        + " FROM [dbo].[Anios_DemandData] "
                        + " where delete_ind = 'F'"
                        + " and (datepart(year, @datevar_CET) - datepart(year, [Date])) <=3")
+
+    elif datatype == 'NEW_SKU': #fetching the Forecast Data from the tabless
+        sql = str( "SELECT  DISTINCT(CONCAT([Key],'*',[Date])) FROM dbo.[Anios_ForecastData] where [Date]>='2022-05-01 00:00:00.000'" 
+                       + "EXCEPT "
+                       + "SELECT CONCAT([Key],'*',[Date]) FROM dbo.[Anios_CalForecastData] where [Date]>='2022-05-01 00:00:00.000'")    
+        
         
         
     elif datatype == 'FORECAST': #fetching the Forecast Data from the tabless
