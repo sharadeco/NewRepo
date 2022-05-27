@@ -285,6 +285,7 @@ def runmodel(data,New_data):
         df.fillna(0,inplace=True)
         df.replace('',0,inplace=True)
         df.drop("Index_new",axis=1,inplace=True)
+        df=df.drop_duplicates()
         print(df)
 
         start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
@@ -299,10 +300,7 @@ def runmodel(data,New_data):
         
         df.reset_index()
         df.set_index("Key",inplace=True)
-        print(" df Columns are as below *****************  ",df.columns)
-        print("fc Columns are as below *****************  ",final_forecast.columns)
-    
-    
+   
         test2= pd.concat([final_forecast,df],axis=0)
         return test2
     
