@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from dateutil import rrule
 
 
+
 import datetime
 
 now = datetime.datetime.now()
@@ -277,36 +278,41 @@ def runmodel(data,New_data):
     final_forecast=final_forecast.transpose().copy()
     final_forecast.index.name='Key'
 
-    def myFun(New_data):
+    def myFun(New_data,final_forecast):
 
-        df = New_data[''].astype(str).str.split("-", expand=True)
-    
+        df =New_data[''].astype(str).str.split("-", expand=True)
+        df.rename(columns={0:"Key",1:"Index_new"},inplace=True)
+        df.fillna(0,inplace=True)
+        df.replace('',0,inplace=True)
+        df.drop("Index_new",axis=1,inplace=True)
+        print(df)
+
         start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
         end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
     
         list_date=[]
         for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
-            print(dt)
-        list_date.append(dt.strftime("%d-%m-%Y") )
-    
-        df.rename(columns={0:"Key"},inplace=True)
-    
-        df.drop(1,axis=1,inplace=True)
+            list_date.append(dt.strftime("%Y-%m-%d") )
     
         for x in list_date:
          df[x]=''
-    
+        
         df.reset_index()
         df.set_index("Key",inplace=True)
+        print(" df Columns are as below *****************  ",df.columns)
+        print("fc Columns are as below *****************  ",final_forecast.columns)
     
     
         test2= pd.concat([final_forecast,df],axis=0)
         return test2
     
 
-    df_new = myFun(New_data)
+    df_new =myFun(New_data,final_forecast)
     df_new.reset_index(inplace=True)
     df_new.set_index("Key",inplace=True)
+
+    df_new.fillna(0,inplace=True)
+    df_new.replace('',0,inplace=True)
     path = os.path.join(path_head, "Anios_temp_arima_output.csv") 
     df_new.to_csv(path, encoding="utf-8")
     
