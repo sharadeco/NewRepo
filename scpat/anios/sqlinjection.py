@@ -218,7 +218,8 @@ def fetch_records(datatype):
                        + " and (datepart(year, @datevar_CET) - datepart(year, [Date])) <=3")
 
     elif datatype == 'NEW_SKU': #fetching the Forecast Data from the tabless
-        sql = str( "SELECT DISTINCT(CONCAT([Key],'-',[Date])) FROM dbo.[Anios_ForecastData] where [Date] >= DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_IST), 0) and Delete_Ind='F' " 
+        sql = str( "DECLARE @datevar_IST as datetime = CAST(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30') AS DATETIME)"
+                       +"SELECT DISTINCT(CONCAT([Key],'-',[Date])) FROM dbo.[Anios_ForecastData] where [Date] >= DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_IST), 0) and Delete_Ind='F' " 
                        + "EXCEPT "
                        + "SELECT CONCAT([Key],'-',[Date]) FROM dbo.[Anios_CalForecastData] where [Date] >= DATEADD(MONTH, DATEDIFF(MONTH, 0,@datevar_IST), 0) and Delete_Indicator='F' ")    
         
