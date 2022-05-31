@@ -280,28 +280,35 @@ def runmodel(data,New_data):
 
     def myFun(New_data,final_forecast):
 
-        df =New_data[''].astype(str).str.split("-", expand=True)
-        df.rename(columns={0:"Key",1:"Index_new"},inplace=True)
-        df.fillna(0,inplace=True)
-        df.replace('',0,inplace=True)
-        df.drop("Index_new",axis=1,inplace=True)
-        df=df.drop_duplicates()
-        print(df)
+        if New_data.empty:
+            test2 = final_forecast
+        else:
 
-        start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
-        end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
+            df =New_data[''].astype(str).str.split("-", expand=True)
+            df.rename(columns={0:"Key",1:"Index_new"},inplace=True)
+            df.fillna(0,inplace=True)
+            df.replace('',0,inplace=True)
+            df.drop("Index_new",axis=1,inplace=True)
+            df= df.drop_duplicates()
+            print(df)
+
+            start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
+            end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
     
-        list_date=[]
-        for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
-            list_date.append(dt.strftime("%Y-%m-%d") )
+            list_date=[]
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
+                list_date.append(dt.strftime("%Y-%m-%d") )
     
-        for x in list_date:
-         df[x]=''
+            for x in list_date:
+             df[x]=''
         
-        df.reset_index()
-        df.set_index("Key",inplace=True)
-   
-        test2= pd.concat([final_forecast,df],axis=0)
+            df.reset_index()
+            df.set_index("Key",inplace=True)
+            print(" df Columns are as below *****************  ",df.columns)
+            print("fc Columns are as below *****************  ",final_forecast.columns)
+    
+    
+            test2= pd.concat([final_forecast,df],axis=0).drop_duplicates().reset_index(drop=True)
         return test2
     
 
