@@ -305,7 +305,12 @@ def fetch_records(datatype):
 
     LOL1=np.matrix(row)
     dataframe=pd.DataFrame(LOL1)
-    dataframe.columns=field_name1    
+    def lenz(dataframe):
+      return len(dataframe) == 1
+    if lenz(dataframe)==True:
+        print("Dataframe is empty")
+    else:
+        dataframe.columns=field_name1  
     cursor.close()    
 
     #try:
