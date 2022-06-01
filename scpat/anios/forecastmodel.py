@@ -292,13 +292,11 @@ def runmodel(data,New_data):
             df= df.drop_duplicates()
             print(df)
 
-            start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
-            end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
+            #start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
+            #end_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00) + relativedelta(months=21)
     
-            list_date=[]
-            for dt in rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date):
-                list_date.append(dt.strftime("%Y-%m-%d") )
-    
+            list_date = final_forecast.columns
+   
             for x in list_date:
              df[x]=''
         
