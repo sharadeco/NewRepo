@@ -306,7 +306,7 @@ def runmodel(data,New_data):
             print("fc Columns are as below *****************  ",final_forecast.columns)
     
     
-            test2= pd.concat([final_forecast,df],axis=0).drop_duplicates().reset_index(drop=True)
+            test2= pd.concat([final_forecast,df],axis=0).drop_duplicates()
         return test2
     
 
