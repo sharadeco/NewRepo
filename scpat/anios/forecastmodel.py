@@ -306,12 +306,13 @@ def runmodel(data,New_data):
             print("fc Columns are as below *****************  ",final_forecast.columns)
     
     
-            test2= pd.concat([final_forecast,df],axis=0).drop_duplicates()
+            test2= pd.concat([final_forecast,df],axis=0)
         return test2
     
 
     df_new =myFun(New_data,final_forecast)
     df_new.reset_index(inplace=True)
+    df_new=df_new.drop_duplicates()
     df_new['Key'].drop_duplicates(inplace=True)
     df_new.set_index("Key",inplace=True)
 
