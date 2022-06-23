@@ -312,8 +312,8 @@ def runmodel(data,New_data):
 
     df_new =myFun(New_data,final_forecast)
     df_new.reset_index(inplace=True)
-    df_new=df_new.drop_duplicates()
-    df_new['Key'].drop_duplicates(inplace=True)
+    df_new=df_new.drop_duplicates(inplace=True)
+    df_new=df_new.drop_duplicates('Key', keep='first')
     df_new.set_index("Key",inplace=True)
 
     df_new.fillna(0,inplace=True)
