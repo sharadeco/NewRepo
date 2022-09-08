@@ -400,7 +400,7 @@ def update_records(column, table):
         sql = str( sql_timezone
                 +"UPDATE A "
                 +"SET  "
-                +"    A.[Désignation]=B.[Désignation],  "
+                +"    A.[Désignation]='',  "
                 +"    A.[Update_Timestamp]= @datevar_CET "
                 +"FROM dbo.Anios_CalForecastData A "
                 +"INNER JOIN "
