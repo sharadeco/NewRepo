@@ -287,9 +287,7 @@ def runmodel(data,New_data):
 
             df =New_data[''].astype(str).str.split("-", expand=True)
             df.rename(columns={0:"Key",1:"Index_new"},inplace=True)
-            df.fillna(0,inplace=True)
-            df.replace('',0,inplace=True)
-            df.drop("Index_new",axis=1,inplace=True)
+            df=df["Key"]
             df= df.drop_duplicates()
             print(df)
 
