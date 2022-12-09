@@ -38,6 +38,12 @@ def runmodel_low(df):
     date_range2=date_range1 + pd.DateOffset(months=9)
     date_final=pd.concat([date_range,date_range1,date_range2],axis=0)
     date_final.drop_duplicates(inplace=True)
+    
+    from datetime import datetime
+    today = datetime.today()
+    datem = datetime(today.year, today.month, 1)
+
+    date_final1=date_final[date_final>datem]
     date_final1=date_final[date_final>df_low.index[(len(df_low.index))-1]]
     date_final1.dropna(inplace=True)
     date_final1['Date'] = pd.to_datetime(date_final1['Date'], format='%Y-%m-%d')
@@ -84,10 +90,14 @@ def runmodel_high(df):
     date_range2=date_range1 + pd.DateOffset(months=9)
     date_final=pd.concat([date_range,date_range1,date_range2],axis=0)
     date_final.drop_duplicates(inplace=True)
-    date_final1=date_final[date_final>TimeSeries1.index[(len(TimeSeries1.index))-1]]
+    
+    from datetime import datetime
+    today = datetime.today()
+    datem = datetime(today.year, today.month, 1)
+
+    date_final1=date_final[date_final>datem]    
     date_final1.dropna(inplace=True)
     date_final1['Date'] = pd.to_datetime(date_final1['Date'], format='%Y-%m-%d')
-
     date_final1=pd.DataFrame(date_final1)
     date_final1.reset_index(inplace=True)
     date_final1=date_final1[0:22:]
@@ -161,7 +171,7 @@ def runmodel(data,New_data):
     Unique_data['status1']=23/Unique_data['freq']
     data2['Actuals']=data2['Actuals'].astype('int')
     Unique_data=Unique_data.merge(data2.groupby('Key')['Actuals'].std() , on='Key', how='inner')
-    Unique_data['category2']=np.where(Unique_data['status1']<10,'Non Outlier','Outlier')
+    Unique_data['category2']=np.where(Unique_data['status1']<10,'Outlier','Outlier')
     ### std deviation , average deviation , cv
 
     Unique_data=Unique_data.merge(data2.groupby('Key')['Actuals'].std(), on='Key', how='inner')
