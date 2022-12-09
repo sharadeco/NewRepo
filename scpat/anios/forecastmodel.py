@@ -248,7 +248,6 @@ def runmodel(data,New_data):
     del data1
     del data2
     del Outlier_data1,Outlier_data2
-    del NonOutlier_data
 
     TimeSeries.replace(np.nan,0,inplace=True)
     TimeSeries.index=pd.to_datetime(TimeSeries.index, errors='coerce')
