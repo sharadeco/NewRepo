@@ -168,10 +168,10 @@ def runmodel(data,New_data):
     Unique_data = Unique_data.drop_duplicates()
     Unique_data=Unique_data.merge(data2.groupby('Key')['freq'].sum() , on='Key', how='inner')
     Unique_data['category1']=np.where(Unique_data['freq']<3,'Extremely slow','Categorized demand')
-    Unique_data['status1']=23/Unique_data['freq']
+    Unique_data['status1']=23/Unique_data['freq'] 
     data2['Actuals']=data2['Actuals'].astype('int')
     Unique_data=Unique_data.merge(data2.groupby('Key')['Actuals'].std() , on='Key', how='inner')
-    Unique_data['category2']=np.where(Unique_data['status1']<10,'Outlier','Outlier')
+    Unique_data['category2']=np.where(Unique_data['status1']<10,'Outlier','Outlier')               
     ### std deviation , average deviation , cv
 
     Unique_data=Unique_data.merge(data2.groupby('Key')['Actuals'].std(), on='Key', how='inner')
@@ -192,7 +192,6 @@ def runmodel(data,New_data):
     Outlier_data=pd.merge(data1,Status1,on ='Key', how = 'left')
 
     Outlier_data1=Outlier_data[Outlier_data['category2']=='Outlier']
-    NonOutlier_data=Outlier_data[Outlier_data['category2']!='Outlier']
 
     Outlier_data2 = Outlier_data1.pivot_table(index=['Date'],values='Actuals', columns=['Key'],aggfunc='sum')
     Outlier_data2.replace(np.nan,0,inplace=True)
@@ -208,7 +207,7 @@ def runmodel(data,New_data):
 
     while (cn < ln):
 
-         
+     
               IQR = Outlier_data2.iloc[:,cn].quantile(0.75) - Outlier_data2.iloc[:,cn].quantile(0.25)
               print(IQR)
    
@@ -216,18 +215,18 @@ def runmodel(data,New_data):
               lower_bound = Outlier_data2.iloc[:,cn].quantile(0.25)- (3 * IQR)
               upper_bound = Outlier_data2.iloc[:,cn].quantile(0.75)+ (3 * IQR)
 
-    
+
 
               (Outlier_data2.iloc[:,cn][(Outlier_data2.iloc[:,cn] < (lower_bound))]) = np.nan
 
-    
+
               Outlier_data2.iloc[:,6].fillna(0,inplace=True)
-    
+
               Outlier_data2.iloc[:,cn][(Outlier_data2.iloc[:,cn] > (upper_bound))]=np.nan
               Outlier_data2.iloc[:,cn].fillna(0,inplace=True)
               cn=cn+1
               print("count:",cn)
-    
+
     Outlier_data2.dropna(how='all', axis=1,inplace=True)    
 
 
@@ -235,19 +234,11 @@ def runmodel(data,New_data):
     Outlier_data2=Outlier_data2.transpose()
     Outlier_data2 = Outlier_data2.unstack().reset_index(name='Actuals')
     Outlier_data2[['Code Produit','Famille de produit','Division','Sales Division']]=Outlier_data2['Key'].str.split('*',expand=True)
-    NonOutlier_data.drop(['category2'],axis=1,inplace=True)
 
-    data_final=pd.concat([Outlier_data2,NonOutlier_data],axis=0)
+    data_final=Outlier_data2
     data_final=data_final[data_final['Sales Division'].isin(['FRS','HEALTHCARE', 'INSTITUTIONAL', 'LIFE SCIENCES'])]
 
-    Status=Unique_data[['Key', 'category3' ]]
-    Status_data=pd.merge(data_final,Status,on ='Key', how = 'left')
-    Status_data=Status_data.dropna(how='all')
-
-    Status_data=Status_data[Status_data['category3']!="Extremely slow"]
-    Status_data['category3'].replace(np.nan,"out",inplace=True)
-    Status_data=Status_data[Status_data['category3']!="out"]
-    Status_data.drop(['category3'],axis=1,inplace=True)
+    Status_data=data_final
     print(Status_data)
     #data1=data1[data1['Date']>=(now+dateutil.relativedelta.relativedelta(months=-25))]
  
