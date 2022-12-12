@@ -288,6 +288,7 @@ def runmodel(data,New_data):
             df.rename(columns={0:"Key",1:"Index_new"},inplace=True)
             df=df["Key"]
             df= df.drop_duplicates()
+            df=pd.DataFrame(df)
             print(df)
 
             #start_date=datetime.datetime.now().replace(day=1).replace(minute=00, hour=00, second=00)
